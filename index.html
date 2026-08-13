@@ -369,6 +369,9 @@ html[data-theme="dark"] .badge-important{color:var(--gold-300)}
 .mainnav a[aria-current="page"]{color:#fff}
 .mainnav a[aria-current="page"]::after{content:"";position:absolute;left:var(--s-3);right:var(--s-3);bottom:2px;height:2px;background:var(--gold-400);border-radius:2px}
 .masthead-actions{margin-left:auto;display:flex;align-items:center;gap:var(--s-2);flex:none}
+.masthead-actions>*{flex:none}
+.ext{display:inline-flex;align-items:center;flex:none}
+.ext svg{width:12px;height:12px;opacity:.75;stroke-width:2}
 .icon-btn{
   width:40px;height:40px;display:grid;place-items:center;border-radius:var(--r-md);
   color:var(--fg-on-brand-muted);transition:background var(--dur-2),color var(--dur-2);
@@ -388,6 +391,61 @@ html[data-theme="dark"] .badge-important{color:var(--gold-300)}
 .mobilenav ul{display:flex;flex-direction:column;padding:var(--s-2) 0}
 .mobilenav a{display:flex;align-items:center;min-height:48px;padding:0 var(--s-6);color:var(--fg-on-brand-muted);font-size:var(--fs-md);font-weight:500}
 .mobilenav a[aria-current="page"]{color:#fff;box-shadow:inset 3px 0 0 var(--gold-400)}
+
+/* --- CMS chrome: the admin console is a separate surface, not a page --- */
+.masthead-admin{background:var(--forest-950)}
+.masthead-admin .masthead-in{max-width:none;padding:0 var(--s-5);gap:var(--s-3)}
+.masthead-admin::after{background:linear-gradient(90deg,rgba(195,154,43,.7),rgba(195,154,43,.25) 55%,transparent)}
+.admin-chip{
+  flex:none;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.16em;font-weight:600;
+  padding:3px 7px;border-radius:var(--r-xs);background:var(--gold-500);color:#1B1403;line-height:1.5;
+}
+.urlbar{
+  display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;min-width:0;
+  border:1px solid rgba(255,255,255,.16);border-radius:var(--r-full);background:rgba(0,0,0,.28);
+  color:var(--fg-on-brand-muted);font-size:11.5px;overflow:hidden;
+}
+.urlbar svg{width:13px;height:13px;color:var(--forest-300);flex:none}
+.urlbar .mono{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who{display:flex;align-items:center;gap:9px;padding:0 var(--s-2) 0 var(--s-1);min-width:0}
+.avatar{
+  width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:var(--forest-600);color:#EAF3ED;font-size:11px;font-weight:700;letter-spacing:.02em;
+  border:1px solid rgba(255,255,255,.18);
+}
+.who-txt{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.who-txt b{font-size:12.5px;color:#fff;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who-txt small{font-size:9.5px;font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--fg-on-brand-muted)}
+@media(max-width:1100px){ .urlbar{display:none} }
+@media(max-width:820px){ .who-txt{display:none} .masthead-admin .brand-txt small{display:none} }
+
+/* CMS sign-in */
+.signin-wrap{
+  min-height:calc(100dvh - var(--header-h));display:grid;place-items:center;padding:var(--s-8) var(--s-4);
+  background:var(--bg-brand-deep);position:relative;overflow:hidden;
+}
+.signin-wrap::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(900px 460px at 50% -12%,rgba(61,128,98,.34),transparent 62%),
+             radial-gradient(600px 340px at 88% 108%,rgba(195,154,43,.13),transparent 60%)}
+.signin{position:relative;z-index:1;width:min(460px,100%);background:var(--bg-elev);border:1px solid var(--border);
+  border-radius:var(--r-xl);box-shadow:var(--e-4);overflow:hidden}
+.signin-head{padding:var(--s-8) var(--s-6) var(--s-6);text-align:center;border-bottom:1px solid var(--border)}
+.signin-head .brand-mark{width:44px;height:44px;font-size:18px;margin:0 auto var(--s-4)}
+.signin-head h1{font-family:var(--font-display);font-size:var(--fs-2xl);font-weight:500}
+.signin-head p{color:var(--fg-muted);font-size:var(--fs-sm);margin-top:6px}
+.signin-body{padding:var(--s-5) var(--s-6) var(--s-6)}
+.acct{
+  display:flex;align-items:center;gap:var(--s-3);width:100%;text-align:left;padding:10px var(--s-3);
+  border:1px solid var(--border);border-radius:var(--r-md);background:var(--bg-elev);margin-bottom:8px;min-height:56px;
+  transition:border-color var(--dur-2) var(--ease-out),background var(--dur-2) var(--ease-out),box-shadow var(--dur-2);
+}
+.acct:hover{border-color:var(--forest-400);background:var(--surface-hover);box-shadow:var(--e-1)}
+.acct .avatar{background:var(--forest-050);color:var(--forest-700);border-color:var(--border)}
+html[data-theme="dark"] .acct .avatar{background:var(--forest-600);color:#EAF3ED}
+.acct .t{flex:1;min-width:0}
+.acct .t b{display:block;font-size:var(--fs-base);font-weight:600}
+.acct .t small{display:block;font-size:var(--fs-xs);color:var(--fg-muted)}
+.acct svg{color:var(--fg-subtle)}
 
 /* Footer */
 .footer{margin-top:auto;background:var(--bg-brand-deep);color:var(--fg-on-brand-muted);padding:var(--s-16) 0 var(--s-8)}
@@ -550,6 +608,12 @@ html[data-theme="dark"] .side-item[aria-pressed="true"],html[data-theme="dark"] 
   .cal-bar{padding:var(--s-3) var(--s-4);gap:var(--s-2)}
   .cal-title{font-size:var(--fs-lg);min-width:0}
   .searchbox{max-width:none;order:10;width:100%;max-width:100%}
+  .cal-bar .seg{overflow-x:auto;max-width:100%;scrollbar-width:none}
+  .cal-bar .seg::-webkit-scrollbar{display:none}
+}
+@media(max-width:420px){
+  .cal-bar .seg button{padding:0 9px;font-size:var(--fs-xs)}
+  .cal-title{font-size:var(--fs-base)}
 }
 .filter-strip{display:flex;gap:var(--s-2);padding:var(--s-3) var(--s-5);overflow-x:auto;border-bottom:1px solid var(--border);background:var(--bg-elev);scrollbar-width:none}
 .filter-strip::-webkit-scrollbar{display:none}
@@ -771,8 +835,7 @@ html[data-theme="dark"] .palette-item.sel,html[data-theme="dark"] .palette-item:
   position:sticky;top:var(--header-h);height:calc(100dvh - var(--header-h));overflow-y:auto;
 }
 @media(max-width:1000px){.admin-side{position:static;height:auto;display:flex;gap:var(--s-2);overflow-x:auto;padding:var(--s-3);scrollbar-width:none}
-.admin-side::-webkit-scrollbar{display:none}
-.admin-link{flex:none;width:auto}}
+.admin-side::-webkit-scrollbar{display:none}}
 .admin-side h5{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--fg-on-brand-muted);padding:0 var(--s-3);margin:var(--s-5) 0 var(--s-2)}
 @media(max-width:1000px){.admin-side h5{display:none}}
 .admin-link{
@@ -783,6 +846,13 @@ html[data-theme="dark"] .palette-item.sel,html[data-theme="dark"] .palette-item:
 .admin-link:hover{background:rgba(255,255,255,.08);color:#fff}
 .admin-link.is-active{background:rgba(195,154,43,.16);color:#fff;box-shadow:inset 2px 0 0 var(--gold-400)}
 .admin-link svg{width:17px;height:17px;stroke-width:1.7;flex:none}
+.admin-side-foot{margin-top:var(--s-6);padding-top:var(--s-4);border-top:1px solid rgba(255,255,255,.12)}
+@media(max-width:1000px){
+  .admin-side-foot{margin:0;padding:0;border-top:0;display:flex;gap:var(--s-2);flex:none}
+  .admin-link{flex:none;width:auto;white-space:nowrap}
+  .masthead-admin .brand-txt{display:none}
+  .masthead-admin .masthead-in{padding:0 var(--s-3)}
+}
 .admin-link .n{margin-left:auto;font-family:var(--font-mono);font-size:10px;background:var(--gold-500);color:#1B1403;padding:1px 6px;border-radius:var(--r-full);font-weight:600}
 .admin-main{min-width:0;background:var(--bg);padding:var(--s-6) var(--s-6) var(--s-16)}
 @media(max-width:640px){.admin-main{padding:var(--s-4) var(--s-4) var(--s-16)}}
@@ -937,9 +1007,11 @@ html[data-theme="dark"] .opt[aria-pressed="true"]{border-color:var(--gold-500);b
 .mb-5{margin-bottom:var(--s-5)}.mb-6{margin-bottom:var(--s-6)}
 .g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s-4);align-items:start}
 .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-4);align-items:start}
-@media(max-width:640px){.g2,.g3{grid-template-columns:1fr}}
-.hide-sm{display:initial}
-@media(max-width:640px){.hide-sm{display:none}}
+@media(max-width:900px){.g3{grid-template-columns:minmax(0,1fr)}}
+pre{min-width:0;max-width:100%}
+@media(max-width:640px){.g2,.g3{grid-template-columns:minmax(0,1fr)}}
+/* Hide on small screens without dictating the element's display type at desktop. */
+@media(max-width:640px){.hide-sm{display:none !important}}
 .nowrap{white-space:nowrap}
 
 /* Motion entrance */
@@ -977,6 +1049,25 @@ html[data-motion="off"] .reveal{opacity:1;transform:none}
 
 const PBIS = {};
 window.PBIS = PBIS;
+
+/* -------------------------------------------------------------- SITE ----
+   Production addressing. The public calendar and the CMS are two separate
+   surfaces on the same host — the CMS is never nested inside the public site.
+   ------------------------------------------------------------------------ */
+const SITE = {
+  domain:      'calendar.pbis.edu.la',
+  origin:      'https://calendar.pbis.edu.la',
+  adminPath:   '/admin',
+  adminDomain: 'calendar.pbis.edu.la/admin',
+  feedBase:    'webcal://calendar.pbis.edu.la/feeds/',
+  apiBase:     'https://calendar.pbis.edu.la/api'
+};
+PBIS.SITE = SITE;
+/** Public URL for a route, as it will read once the domain is live. */
+function publicUrl(hashPath){ return SITE.origin + (hashPath==='/' ? '' : hashPath); }
+/** Address of this prototype file, for links that must work offline too. */
+function localUrl(hash){ return location.origin + location.pathname + '#' + hash; }
+PBIS.publicUrl = publicUrl; PBIS.localUrl = localUrl;
 
 /* ---------------------------------------------------------------- TIME --- */
 const TZ = 'Asia/Vientiane';
@@ -1182,9 +1273,10 @@ PBIS.uid=uid; PBIS.slugify=slugify; PBIS.byId=byId; PBIS.esc=esc;
 function seedEvents(){
   const E = [];
   const today = T.todayKey();
+  let n = 0;
   const add = o => {
     const ev = Object.assign({
-      id: uid(), title:'', description:'', date:null, endDate:null, start:null, end:null,
+      id: 'seed-' + (++n), seeded: true, title:'', description:'', date:null, endDate:null, start:null, end:null,
       allDay:false, campusId:null, yearGroupIds:[], audienceIds:['community'],
       categoryId:'other', locationId:null, organizerId:'u2',
       visibility:'public', status:'published', important:false,
@@ -1200,8 +1292,8 @@ function seedEvents(){
   /* ---- Around today: makes Today / This Week feel alive ---- */
   add({title:'Teacher Training Day — Safeguarding & Child Protection', date:rel(0), start:'08:30', end:'12:00',
     campusId:null, categoryId:'staff', audienceIds:['teachers','staff'], locationId:'loc-audit', organizerId:'u1',
-    description:'Whole-staff INSET on the updated safeguarding policy, reporting routes and the new pastoral referral system. Attendance is compulsory for all teaching and support staff.',
-    visibility:'internal', important:true});
+    description:'Whole-staff INSET on the updated safeguarding policy, reporting routes and the new pastoral referral system. Attendance is compulsory for all teaching and support staff. School is closed to students.',
+    visibility:'public', important:true});
   add({title:'New Staff Orientation & Campus Tour', date:rel(0), start:'13:00', end:'15:30',
     campusId:null, categoryId:'staff', audienceIds:['teachers','staff'], locationId:'loc-conf', organizerId:'u2',
     description:'Induction for teachers joining PBIS this academic year. Systems, timetabling, house structure and a walking tour of all three campuses.',
@@ -1209,6 +1301,12 @@ function seedEvents(){
   add({title:'Secondary Department Heads Meeting', date:rel(0), start:'15:45', end:'17:00',
     campusId:'se', categoryId:'meeting', audienceIds:['teachers','leadership'], locationId:'loc-selib', organizerId:'u4',
     description:'Term 1 curriculum planning, IGCSE entry deadlines and the assessment calendar.', visibility:'internal'});
+  add({title:'Admissions Office Open — New Family Enrolment', date:rel(0), start:'08:30', end:'16:00',
+    campusId:null, categoryId:'admissions', audienceIds:['parents'], locationId:'loc-adm', organizerId:'u2',
+    description:'The admissions team is available for enrolment paperwork, fee queries and campus tours ahead of the new term. No appointment necessary.'});
+  add({title:'Library Open for Textbook Collection', date:rel(0), start:'09:00', end:'15:00',
+    campusId:null, categoryId:'academic', audienceIds:['students','parents'], locationId:'loc-selib', organizerId:'u4',
+    description:'Students in Years 7 to 13 may collect their textbook sets and reading lists before term begins. Please bring a bag.'});
   add({title:'Classroom Setup — Early Years', date:rel(1), start:'08:00', end:'16:00',
     campusId:'ey', categoryId:'staff', audienceIds:['teachers'], locationId:'loc-eyhall', organizerId:'u5',
     description:'Preparation day for Nursery and Reception learning environments ahead of the first day of term.', visibility:'internal'});
@@ -1486,7 +1584,7 @@ function seedSubmissions(){
 }
 
 /* -------------------------------------------------------------- STORE ---- */
-const STORAGE_KEY = 'pbis-central-calendar-v1';
+const STORAGE_KEY = 'pbis-central-calendar-v2';
 
 const Store = {
   state:{
@@ -1494,6 +1592,7 @@ const Store = {
     campuses:CAMPUSES.slice(), yearGroups:YEAR_GROUPS.slice(), categories:CATEGORIES.slice(),
     locations:LOCATIONS.slice(), academicYears:ACADEMIC_YEARS.slice(), terms:TERMS.slice(),
     currentUserId:'u2',
+    session:{ signedIn:false, since:null },
     prefs:{ theme:'light', motion:'on', onboarded:false, campusId:null, yearGroupId:null, audienceId:null, categoryIds:[], subscriptions:[] },
     ui:{ view:'month', cursor:null, ayId:'ay2627', filters:{campusIds:[],yearGroupIds:[],categoryIds:[],audienceIds:[],statuses:[],q:''} }
   },
@@ -1507,18 +1606,31 @@ const Store = {
     this.state.auditLog = seedAudit(this.state.events);
     this.state.ui.cursor = T.todayKey();
     if(saved && saved.prefs) Object.assign(this.state.prefs, saved.prefs);
-    if(saved && Array.isArray(saved.events) && saved.events.length){
-      // user-authored events are merged on top of the canonical seed
-      const seedIds = new Set(this.state.events.map(e=>e.id));
-      saved.events.forEach(e=>{ if(!seedIds.has(e.id)) this.state.events.push(e); });
-      saved.events.forEach(e=>{ const i=this.state.events.findIndex(x=>x.id===e.id); if(i>-1) this.state.events[i]=Object.assign(this.state.events[i],e); });
+    if(saved && saved.session) Object.assign(this.state.session, saved.session);
+    if(saved && saved.currentUserId) this.state.currentUserId = saved.currentUserId;
+    if(saved){
+      // Edits to seeded events are replayed over the canonical seed…
+      (saved.overrides||[]).forEach(o=>{
+        const i = this.state.events.findIndex(x=>x.id===o.id);
+        if(i>-1) this.state.events[i] = Object.assign(this.state.events[i], o);
+      });
+      // …then the user's own events are appended, never duplicated.
+      const known = new Set(this.state.events.map(e=>e.id));
+      (saved.userEvents||[]).forEach(e=>{ if(!known.has(e.id)){ this.state.events.push(e); known.add(e.id); } });
     }
     applyTheme(this.state.prefs.theme);
     applyMotion(this.state.prefs.motion);
   },
   persist(){
     try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({prefs:this.state.prefs, events:this.state.events}));
+      // Seeded events are regenerated from code on every load, so only the
+      // user's own events and their edits to seeded ones are stored.
+      const userEvents = this.state.events.filter(e=>!e.seeded);
+      const overrides  = this.state.events.filter(e=>e.seeded && e.modified);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        prefs:this.state.prefs, userEvents, overrides,
+        session:this.state.session, currentUserId:this.state.currentUserId
+      }));
     }catch(err){ /* storage may be unavailable — the app still works in-session */ }
   },
   subscribe(fn){ this.listeners.add(fn); return ()=>this.listeners.delete(fn); },
@@ -1528,7 +1640,21 @@ const Store = {
   setUI(patch){ Object.assign(this.state.ui, patch); this.emit(); },
   setFilters(patch){ Object.assign(this.state.ui.filters, patch); this.emit(); },
 
-  user(){ return byId(USERS, this.state.currentUserId) || USERS[0]; },
+  GUEST:{id:'guest', name:'Guest', email:'', role:'public', campusId:null, initials:'G'},
+  user(){
+    if(!this.state.session.signedIn) return this.GUEST;
+    return byId(USERS, this.state.currentUserId) || USERS[0];
+  },
+  signIn(userId){
+    this.state.currentUserId = userId;
+    this.state.session = {signedIn:true, since:new Date().toISOString()};
+    this.audit('signed in', userId, byId(USERS,userId).name);
+    this.persist(); this.emit();
+  },
+  signOut(){
+    this.state.session = {signedIn:false, since:null};
+    this.persist(); this.emit();
+  },
   role(){ return ROLES[this.user().role]; },
   can(action){
     const r = this.user().role;
@@ -1552,6 +1678,7 @@ const Store = {
   /* --- mutations, all audited, all undoable --- */
   addEvent(ev, silent){
     ev.id = ev.id || uid();
+    ev.seeded = false;
     ev.slug = ev.slug || slugify(ev.title)+'-'+ev.date.slice(2,7).replace('-','');
     ev.createdAt = T.todayKey(); ev.updatedAt = T.todayKey();
     ev.createdBy = this.state.currentUserId; ev.updatedBy = this.state.currentUserId;
@@ -1563,7 +1690,7 @@ const Store = {
   updateEvent(id, patch, action){
     const i = this.state.events.findIndex(e=>e.id===id); if(i<0) return null;
     const before = JSON.parse(JSON.stringify(this.state.events[i]));
-    Object.assign(this.state.events[i], patch, {updatedAt:T.todayKey(), updatedBy:this.state.currentUserId});
+    Object.assign(this.state.events[i], patch, {updatedAt:T.todayKey(), updatedBy:this.state.currentUserId, modified:true});
     this.audit(action||'updated', id, this.state.events[i].title);
     this._undo = {label:`Updated “${before.title}”`, fn:()=>{ const j=this.state.events.findIndex(e=>e.id===id); if(j>-1) this.state.events[j]=before; this.persist(); this.emit(); }};
     this.persist(); this.emit(); return this.state.events[i];
@@ -1571,14 +1698,14 @@ const Store = {
   deleteEvent(id){
     const i = this.state.events.findIndex(e=>e.id===id); if(i<0) return;
     const before = this.state.events[i];
-    this.state.events[i] = Object.assign({}, before, {status:'archived', deletedAt:T.todayKey()});
+    this.state.events[i] = Object.assign({}, before, {status:'archived', deletedAt:T.todayKey(), modified:true});
     this.audit('archived', id, before.title);
     this._undo = {label:`Archived “${before.title}”`, fn:()=>{ const j=this.state.events.findIndex(e=>e.id===id); if(j>-1) this.state.events[j]=before; this.persist(); this.emit(); }};
     this.persist(); this.emit();
   },
   bulk(ids, patch, label){
     const before = ids.map(id=>JSON.parse(JSON.stringify(this.state.events.find(e=>e.id===id))));
-    ids.forEach(id=>{ const i=this.state.events.findIndex(e=>e.id===id); if(i>-1){ Object.assign(this.state.events[i], patch, {updatedAt:T.todayKey(),updatedBy:this.state.currentUserId}); }});
+    ids.forEach(id=>{ const i=this.state.events.findIndex(e=>e.id===id); if(i>-1){ Object.assign(this.state.events[i], patch, {updatedAt:T.todayKey(),updatedBy:this.state.currentUserId,modified:true}); }});
     this.audit('updated', ids[0], `${ids.length} events — ${label}`);
     this._undo = {label:`${label} (${ids.length} events)`, fn:()=>{ before.forEach(b=>{ const i=this.state.events.findIndex(e=>e.id===b.id); if(i>-1) this.state.events[i]=b; }); this.persist(); this.emit(); }};
     this.persist(); this.emit();
@@ -1684,7 +1811,11 @@ const I = (() => {
     eye:s('<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/>'),
     move:s('<path d="M12 3v18M3 12h18"/><path d="m9 6 3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/>'),
     repeat:s('<path d="M17 2.5 20.5 6 17 9.5"/><path d="M3.5 11V9.5a3.5 3.5 0 0 1 3.5-3.5h13.5"/><path d="M7 21.5 3.5 18 7 14.5"/><path d="M20.5 13v1.5a3.5 3.5 0 0 1-3.5 3.5H3.5"/>'),
-    table:s('<rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M3 9.5h18M3 14.5h18M9 9.5v10"/>')
+    table:s('<rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M3 9.5h18M3 14.5h18M9 9.5v10"/>'),
+    external:s('<path d="M13.5 4.5H19.5V10.5"/><path d="M19.5 4.5 11 13"/><path d="M18 14.5v4a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6h4"/>'),
+    signout:s('<path d="M9.5 4.5H6A1.5 1.5 0 0 0 4.5 6v12A1.5 1.5 0 0 0 6 19.5h3.5"/><path d="M15 8.5 19 12l-4 3.5"/><path d="M19 12H9.5"/>'),
+    user:s('<circle cx="12" cy="8" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/>'),
+    key:s('<circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3.5M15.5 12v2.5"/>')
   };
 })();
 PBIS.I = I;
@@ -1939,7 +2070,7 @@ function eventToVEVENT(ev){
   if(loc) L.push(`LOCATION:${icsEscape(loc.name + (cam? ' — '+cam.name+' Campus':''))}`);
   if(cat) L.push(`CATEGORIES:${icsEscape(cat.name)}`);
   L.push(`STATUS:${ev.status==='cancelled'?'CANCELLED':ev.status==='draft'?'TENTATIVE':'CONFIRMED'}`);
-  L.push(`URL:${location.origin}${location.pathname}#/events/${ev.slug}`);
+  L.push(`URL:${SITE.origin}/events/${ev.slug}`);
   L.push(`X-PBIS-CAMPUS:${cam?cam.name:'Whole School'}`);
   L.push('END:VEVENT');
   return L;
@@ -1994,10 +2125,9 @@ function outlookUrl(ev){
   return 'https://outlook.live.com/calendar/0/deeplink/compose?'+p.toString();
 }
 /** Stable webcal-style feed address for a subscription scope. */
-function feedUrl(scope){
-  const base = 'webcal://calendar.pbis.edu.la/feeds/';
-  return base + scope + '.ics';
-}
+function feedUrl(scope){ return SITE.feedBase + scope + '.ics'; }
+/** The same feed over https, for apps that will not accept webcal://. */
+function feedUrlHttps(scope){ return SITE.origin + '/feeds/' + scope + '.ics'; }
 
 /* --------------------------------------------------------- CSV EXPORT --- */
 function toCSV(events){
@@ -2044,7 +2174,7 @@ PBIS.expand=expand; PBIS.query=query; PBIS.matchFilters=matchFilters; PBIS.match
 PBIS.findConflicts=findConflicts; PBIS.allConflicts=allConflicts; PBIS.visibleTo=visibleTo;
 PBIS.termFor=termFor; PBIS.ayFor=ayFor; PBIS.activeAY=activeAY;
 PBIS.buildICS=buildICS; PBIS.downloadICS=downloadICS; PBIS.googleUrl=googleUrl; PBIS.outlookUrl=outlookUrl;
-PBIS.feedUrl=feedUrl; PBIS.toCSV=toCSV; PBIS.downloadCSV=downloadCSV; PBIS.parseCSV=parseCSV;
+PBIS.feedUrl=feedUrl; PBIS.feedUrlHttps=feedUrlHttps; PBIS.toCSV=toCSV; PBIS.downloadCSV=downloadCSV; PBIS.parseCSV=parseCSV;
 
 /* ------------------------------------------------------------- UTIL UI -- */
 function catColour(catId){
@@ -2169,13 +2299,15 @@ function renderMasthead(){
         </button>
         <button class="icon-btn nav-toggle" data-act="mobilenav" aria-label="Open menu" aria-expanded="${App.mobileNavOpen}">${I.menu}</button>
         <button class="icon-btn" data-act="theme" aria-label="Switch to ${dark?'light':'dark'} mode" title="${dark?'Light':'Dark'} mode">${dark?I.sun:I.moon}</button>
-        ${canAdmin?`<a class="btn btn-gold btn-sm hide-sm" href="#/admin" style="margin-left:4px">${I.settings}<span>Admin</span></a>`
-                  :`<a class="btn btn-on-dark btn-sm hide-sm" href="#/admin" style="margin-left:4px">Staff sign in</a>`}
+        <a class="btn ${canAdmin?'btn-gold':'btn-on-dark'} btn-sm hide-sm" href="#/admin" target="_blank" rel="noopener"
+           style="margin-left:4px" title="Opens ${SITE.adminDomain} in a new tab">
+          ${canAdmin?I.settings:I.lock}<span>${canAdmin?'Admin':'Staff sign in'}</span><span class="ext">${I.external}</span>
+        </a>
       </div>
     </div>
     ${App.mobileNavOpen?`<div class="mobilenav"><ul>
       ${NAV.map(n=>`<li><a href="#${n.path}" ${cur===n.path?'aria-current="page"':''}>${n.label}</a></li>`).join('')}
-      <li><a href="#/admin">Admin Console</a></li>
+      <li><a href="#/admin" target="_blank" rel="noopener">Admin Console ↗</a></li>
       <li><a href="#/signage">Digital Signage</a></li>
     </ul></div>`:''}
   </header>`;
@@ -2211,7 +2343,7 @@ function renderFooter(){
         <div>
           <h5>Platform</h5>
           <ul>
-            <li><a href="#/admin">Admin console</a></li>
+            <li><a href="#/admin" target="_blank" rel="noopener">Admin console ↗</a></li>
             <li><a href="#/signage">Digital signage</a></li>
             <li><a href="#/embed">Embeddable calendar</a></li>
             <li><a href="#/api">Calendar API</a></li>
@@ -2220,11 +2352,42 @@ function renderFooter(){
       </div>
       <div class="footer-bottom">
         <span>© ${new Date().getFullYear()} Panyathip British International School · Celebrating 25 years</span>
+        <span class="mono">${SITE.domain}</span>
         <span class="mono">All times Asia/Vientiane (UTC+7)</span>
       </div>
     </div>
   </footer>`;
 }
+
+/* ------------------------------------------------- ADMIN (CMS) CHROME ---- */
+function renderAdminMasthead(sub){
+  const u = Store.user();
+  const dark = Store.state.prefs.theme==='dark';
+  const signedIn = Store.state.session.signedIn;
+  return `
+  <header class="masthead masthead-admin">
+    <div class="masthead-in">
+      <a class="brand" href="#/admin" aria-label="PBIS Central Calendar CMS, dashboard">
+        <span class="brand-mark" aria-hidden="true">P</span>
+        <span class="brand-txt"><b>PBIS Central Calendar</b><small>Content Management System</small></span>
+      </a>
+      <span class="admin-chip" aria-hidden="true">CMS</span>
+      <span class="urlbar" title="Production address of the CMS">${I.lock}<span class="mono">${SITE.adminDomain}${sub&&sub!=='dashboard'?'/'+sub:''}</span></span>
+      <div class="masthead-actions">
+        <a class="btn btn-on-dark btn-sm" href="#/" target="_blank" rel="noopener" title="Opens ${SITE.domain} in a new tab">
+          ${I.globe}<span class="hide-sm">View public site</span><span class="ext">${I.external}</span></a>
+        ${signedIn?`<button class="kbd-hint" data-act="palette" aria-label="Open command palette">${I.search}<span>Search</span><span class="kbd">⌘K</span></button>`:''}
+        <button class="icon-btn" data-act="theme" aria-label="Switch to ${dark?'light':'dark'} mode" title="${dark?'Light':'Dark'} mode">${dark?I.sun:I.moon}</button>
+        ${signedIn?`<span class="who" title="${esc(u.email)}">
+            <span class="avatar" aria-hidden="true">${esc(u.initials)}</span>
+            <span class="who-txt"><b>${esc(u.name)}</b><small>${esc(Store.role().name)}</small></span>
+          </span>
+          <button class="icon-btn" data-act="sign-out" aria-label="Sign out of the CMS" title="Sign out">${I.signout}</button>`:''}
+      </div>
+    </div>
+  </header>`;
+}
+PBIS.renderAdminMasthead = renderAdminMasthead;
 
 /* --------------------------------------------------------- OVERLAYS ----- */
 const Overlay = {
@@ -2560,7 +2723,7 @@ document.addEventListener('click', e=>{
       if(ev){ downloadICS([ev], ev.title); toast('Calendar file downloaded',{type:'success'}); }
       break;
     }
-    case 'copy-event': stop(); copy(location.origin+location.pathname+'#/events/'+t.dataset.slug, 'Event link'); break;
+    case 'copy-event': stop(); copy(SITE.origin+'/events/'+t.dataset.slug, 'Event link'); break;
     case 'copy-text': stop(); copy(t.dataset.text, t.dataset.label||'Link'); break;
     case 'toggle-side': stop(); App.sideOpen=!App.sideOpen; render(); break;
   }
@@ -3438,6 +3601,9 @@ function viewSubscribe(){
               <p>${esc(s.d)}</p>
               <div class="feed-url"><span>${esc(feedUrl(s.k))}</span>
                 <button class="btn btn-ghost btn-sm" data-act="copy-text" data-text="${esc(feedUrl(s.k))}" data-label="Feed address" aria-label="Copy feed address for ${esc(s.t)}">${I.copy}</button></div>
+              <details style="margin-top:-4px"><summary class="hint" style="cursor:pointer">Prefer an https address?</summary>
+                <div class="feed-url mt-2"><span>${esc(feedUrlHttps(s.k))}</span>
+                <button class="btn btn-ghost btn-sm" data-act="copy-text" data-text="${esc(feedUrlHttps(s.k))}" data-label="Feed address" aria-label="Copy https feed address for ${esc(s.t)}">${I.copy}</button></div></details>
               <div class="row row-tight">
                 <button class="btn ${p.subscriptions.includes(s.k)?'btn-outline':'btn-primary'} btn-sm grow" data-act="toggle-sub" data-scope="${s.k}">
                   ${p.subscriptions.includes(s.k)?'Unsubscribe':'Subscribe'}</button>
@@ -3683,12 +3849,12 @@ function viewSignage(){
 /* ------------------------------------------------------------- EMBED ---- */
 function viewEmbed(){
   const params = ['campus','yearGroup','category','audience','academicYear','view','limit','theme'];
-  const snippet = `<iframe\n  src="https://calendar.pbis.edu.la/embed?campus=primary&yearGroup=year-5&view=agenda&limit=6"\n  width="100%" height="520" style="border:0;border-radius:12px"\n  title="PBIS Central Calendar — Primary, Year 5" loading="lazy"></iframe>`;
+  const snippet = `<iframe\n  src="${SITE.origin}/embed?campus=primary&yearGroup=year-5&view=agenda&limit=6"\n  width="100%" height="520" style="border:0;border-radius:12px"\n  title="PBIS Central Calendar — Primary, Year 5" loading="lazy"></iframe>`;
   const today=T.todayKey();
   const preview = query({from:today,to:T.addDays(today,90),filters:{campusIds:['pr'],yearGroupIds:['y5'],categoryIds:[],audienceIds:[],statuses:[],q:''}})
     .filter(o=>o.isStart&&o.ev.status==='published').slice(0,6);
   return `<main id="main" class="section"><div class="shell" style="max-width:1000px">
-    <span class="eyebrow eyebrow-gold">Integration</span>
+    <span class="eyebrow eyebrow-gold">Integration · ${SITE.domain}</span>
     <h1 class="display mt-3" style="font-size:clamp(1.9rem,4vw,2.8rem)">Embeddable Calendar</h1>
     <p class="muted mt-4" style="max-width:64ch;font-size:var(--fs-md);line-height:1.7">
       The PBIS website, parent portal and campus landing pages consume the same canonical events —
@@ -3745,7 +3911,7 @@ function viewAPI(){
     ['GET','/v1/admin/audit','Administrative','Immutable audit trail.']
   ];
   return `<main id="main" class="section"><div class="shell" style="max-width:960px">
-    <span class="eyebrow eyebrow-gold">API-first architecture</span>
+    <span class="eyebrow eyebrow-gold">API-first architecture · ${SITE.apiBase}</span>
     <h1 class="display mt-3" style="font-size:clamp(1.9rem,4vw,2.8rem)">Calendar API</h1>
     <p class="muted mt-4" style="max-width:66ch;font-size:var(--fs-md);line-height:1.7">
       The database is the source of truth. The website, the CMS, personal calendar subscriptions, digital signage
@@ -3771,7 +3937,7 @@ function viewAPI(){
         campus:{id:'pr',name:'Primary'}, yearGroups:[{id:'y6',name:'Year 6'}],
         audiences:['parents'], category:{id:'parent',name:'Parent Event'},
         location:{id:'loc-prhall',name:'Primary Hall'}, visibility:'public', status:'published', important:true,
-        links:{self:'/v1/events/year-6-parent-evening-2609', ics:'/v1/events/evt_7fh2k9.ics', web:'/events/year-6-parent-evening-2609'}
+        links:{self:'/v1/events/year-6-parent-evening-2609', ics:'/v1/events/evt_7fh2k9.ics', web:SITE.origin+'/events/year-6-parent-evening-2609'}
       }],
       meta:{total:1, academicYear:'2026-2027', generatedAt:'2026-08-13T09:00:00+07:00'}
     },null,2))}</pre>
@@ -3812,7 +3978,33 @@ const ADMIN_NAV = [
   ]}
 ];
 
+/* The CMS is gated. Signing in is what separates calendar.pbis.edu.la
+   from calendar.pbis.edu.la/admin — not a hidden link. */
+function adminSignIn(){
+  const staff = USERS.filter(u=>u.role!=='parent'&&u.role!=='student');
+  return `<main id="main" class="signin-wrap">
+    <div class="signin">
+      <div class="signin-head">
+        <span class="brand-mark" aria-hidden="true">P</span>
+        <h1>Content Management System</h1>
+        <p>PBIS Central Calendar · <span class="mono">${SITE.adminDomain}</span></p>
+      </div>
+      <div class="signin-body">
+        <div class="alert alert-info">${I.info}<div class="txt"><b>Demonstration sign-in</b>
+          <span class="body">In production this is your school Google Workspace account. Choose a role below to see the CMS exactly as that person would.</span></div></div>
+        <h5 class="eyebrow mb-3 mt-5">Staff accounts</h5>
+        ${staff.map(u=>`<button class="acct" data-act="sign-in" data-id="${u.id}">
+          <span class="avatar">${esc(u.initials)}</span>
+          <span class="t"><b>${esc(u.name)}</b><small>${esc(ROLES[u.role].name)}${u.campusId?' · '+esc(campusName(u.campusId)):' · All campuses'}</small></span>
+          ${I.arrowRight}</button>`).join('')}
+        <a class="btn btn-ghost btn-block mt-4" href="#/" target="_blank" rel="noopener">${I.globe}View the public calendar<span class="ext">${I.external}</span></a>
+      </div>
+    </div>
+  </main>`;
+}
+
 function viewAdmin(sub){
+  if(!Store.state.session.signedIn) return adminSignIn();
   const pending = Store.state.submissions.filter(s=>s.status==='pending').length;
   const body = {
     dashboard:adminDashboard, calendar:adminCalendar, events:adminEvents, submissions:adminSubmissions,
@@ -3827,6 +4019,10 @@ function viewAdmin(sub){
         ${g.items.map(([k,label,icon])=>`<a class="admin-link ${sub===k?'is-active':''}" href="#/admin/${k}">
           ${icon}<span>${label}</span>${k==='submissions'&&pending?`<span class="n">${pending}</span>`:''}</a>`).join('')}
       `).join('')}
+      <div class="admin-side-foot">
+        <a class="admin-link" href="#/" target="_blank" rel="noopener">${I.globe}<span>Public site</span></a>
+        <button class="admin-link" data-act="sign-out">${I.signout}<span>Sign out</span></button>
+      </div>
     </nav>
     <div class="admin-main">${body()}</div>
   </main>`;
@@ -3936,9 +4132,9 @@ function adminDashboard(){
 function adminCalendar(){
   return `<div class="admin-head"><div><h2>Calendar</h2><p>Drag an event to another day to move it. Every change can be undone.</p></div>
     <div class="row row-tight">
-      <button class="btn btn-outline btn-sm" data-act="cal-prev">${I.chevL}</button>
+      <button class="btn btn-outline btn-sm" data-act="cal-prev" aria-label="Previous month">${I.chevL}</button>
       <button class="btn btn-outline btn-sm" data-act="cal-today">Today</button>
-      <button class="btn btn-outline btn-sm" data-act="cal-next">${I.chevR}</button>
+      <button class="btn btn-outline btn-sm" data-act="cal-next" aria-label="Next month">${I.chevR}</button>
       <button class="btn btn-primary btn-sm" data-act="new-event">${I.plus}Create</button>
     </div></div>
     <div class="alert alert-info">${I.info}<div class="txt"><b>${esc(calTitle())}</b>
@@ -4509,7 +4705,7 @@ function adminUsers(){
       <td><span class="badge ${u.role==='super'?'badge-gold':u.role==='caladmin'?'badge-info':'badge-neutral'}">${esc(ROLES[u.role].name)}</span></td>
       <td>${u.campusId?esc(campusName(u.campusId)):'<span class="subtle">All campuses</span>'}</td>
       <td><div class="rowacts">${u.id===cur?'<span class="badge badge-success">Signed in</span>'
-        :`<button class="btn btn-outline btn-sm" data-act="switch-user" data-id="${u.id}">Sign in as</button>`}</div></td></tr>`).join('')}
+        :`<button class="btn btn-outline btn-sm" data-act="switch-user" data-id="${u.id}">Switch to</button>`}</div></td></tr>`).join('')}
     </tbody></table></div></div>
 
   <div class="panel"><div class="panel-head"><h3>Role permissions</h3></div><div class="panel-body flush">
@@ -4532,6 +4728,15 @@ function adminSettings(){
       <div class="field mb-4"><label class="label" for="set-tz">Canonical time zone</label>
         <select class="select" id="set-tz"><option selected>Asia/Vientiane (UTC+7)</option><option>Asia/Bangkok (UTC+7)</option></select>
         <span class="hint">All events are stored and distributed in this time zone, never the visitor's device time zone.</span></div>
+      <div class="field mb-4"><label class="label" for="set-domain">Public calendar domain</label>
+        <input class="input mono" id="set-domain" value="${SITE.domain}">
+        <span class="hint">Families reach the calendar at <span class="mono">${SITE.origin}</span>.</span></div>
+      <div class="field mb-4"><label class="label" for="set-admin-domain">CMS address</label>
+        <input class="input mono" id="set-admin-domain" value="${SITE.adminDomain}" readonly>
+        <span class="hint">The CMS always lives at <span class="mono">/admin</span> on the same host, behind sign-in. It is a separate surface, not a page of the public site.</span></div>
+      <div class="field mb-4"><label class="label" for="set-feed">Feed base address</label>
+        <input class="input mono" id="set-feed" value="${SITE.feedBase}" readonly>
+        <span class="hint">Every subscription is served from this path. Also available over https for apps that reject <span class="mono">webcal://</span>.</span></div>
       <div class="field"><label class="label" for="set-week">Week starts on</label><select class="select" id="set-week"><option selected>Monday</option><option>Sunday</option></select></div>
     </div></div>
 
@@ -4987,7 +5192,7 @@ document.addEventListener('click', e=>{
     case 'ed-save-quick': st(e); saveEditor('draft', true); break;
     case 'ed-save': st(e); saveEditor(t.dataset.status); break;
     case 'ed-duplicate': { st(e); const c=JSON.parse(JSON.stringify(EditorState));
-      c.id=null; c.slug=null; c.title=c.title+' (copy)'; c.status='draft'; c._saved=false; EditorState=c; renderEditor();
+      c.id=null; c.seeded=false; c.modified=false; c.slug=null; c.title=c.title+' (copy)'; c.status='draft'; c._saved=false; EditorState=c; renderEditor();
       toast('Duplicated — review and save the copy'); break; }
     case 'ed-delete': { st(e); const id=EditorState.id;
       confirmDialog({title:'Archive this event?', body:'The event is removed from the calendar but kept in the archive with its full history. You can restore it at any time.',
@@ -5013,12 +5218,12 @@ document.addEventListener('click', e=>{
       if(op==='cancel'){ Store.bulk(ids,{status:'cancelled'},'Cancelled'); toast(`${ids.length} events cancelled`,{type:'warning',undo:true}); }
       if(op==='archive'){ Store.bulk(ids,{status:'archived'},'Archived'); toast(`${ids.length} events archived`,{type:'success',undo:true}); AdminState.selected.clear(); }
       if(op==='duplicate'){ ids.forEach(id=>{ const src=Store.state.events.find(x=>x.id===id);
-          const c=JSON.parse(JSON.stringify(src)); c.id=uid(); c.slug=null; c.title=src.title+' (copy)'; c.status='draft'; Store.addEvent(c,true); });
+          const c=JSON.parse(JSON.stringify(src)); c.id=uid(); c.seeded=false; c.modified=false; c.slug=null; c.title=src.title+' (copy)'; c.status='draft'; Store.addEvent(c,true); });
         toast(`${ids.length} events duplicated as drafts`,{type:'success'}); AdminState.selected.clear(); }
       if(op==='export'){ const list=Store.state.events.filter(x=>ids.includes(x.id)); downloadICS(list,'PBIS — Selected Events'); toast(`${ids.length} events exported`,{type:'success'}); }
       render(); break; }
     case 'dup-event': { st(e); const src=Store.state.events.find(x=>x.id===t.dataset.id);
-      const c=JSON.parse(JSON.stringify(src)); c.id=uid(); c.slug=null; c.title=src.title+' (copy)'; c.status='draft';
+      const c=JSON.parse(JSON.stringify(src)); c.id=uid(); c.seeded=false; c.modified=false; c.slug=null; c.title=src.title+' (copy)'; c.status='draft';
       Store.addEvent(c); toast(`“${src.title}” duplicated as a draft`,{type:'success',undo:true}); break; }
 
     /* --- submissions --- */
@@ -5066,9 +5271,17 @@ document.addEventListener('click', e=>{
     case 'ro-back': st(e); AdminState.rollover.step=Math.max(0,AdminState.rollover.step-1); render(); break;
     case 'ro-dec': st(e); AdminState.rollover.decisions[t.dataset.k]=t.dataset.v; render(); break;
 
+    /* --- session --- */
+    case 'sign-in': { st(e); const id=t.dataset.id; Store.signIn(id);
+      toast(`Signed in as ${userName(id)} · ${ROLES[byId(USERS,id).role].name}`,{type:'success'}); break; }
+    case 'sign-out': { st(e);
+      confirmDialog({title:'Sign out of the CMS?', body:'You will be returned to the sign-in screen. Nothing you have published is affected.',
+        confirmLabel:'Sign out', onConfirm:()=>{ Store.signOut(); go('/admin'); toast('Signed out of the CMS'); }});
+      break; }
+
     /* --- misc admin --- */
-    case 'switch-user': { st(e); Store.set({currentUserId:t.dataset.id});
-      toast(`Now signed in as ${userName(t.dataset.id)} · ${ROLES[byId(USERS,t.dataset.id).role].name}`,{type:'success'}); break; }
+    case 'switch-user': { st(e); Store.signIn(t.dataset.id);
+      toast(`Now working as ${userName(t.dataset.id)} · ${ROLES[byId(USERS,t.dataset.id).role].name}`,{type:'success'}); break; }
     case 'tax-add': case 'tax-edit': st(e);
       toast('Taxonomy editing is wired to the API in production — the data model already supports it',{type:'info'}); break;
     case 'show-conflicts': { st(e); const cf=allConflicts();
@@ -5227,8 +5440,11 @@ function render(){
   const scrollY = window.scrollY;
 
   if(r.name==='signage'){
+    document.documentElement.setAttribute('data-surface','signage');
+    document.title = routeTitle(r);
     root.innerHTML = viewSignage();
     startClock();
+    App._lastRoute='signage';
     return;
   }
 
@@ -5244,10 +5460,16 @@ function render(){
     case 'campus':    body = viewCampus(r.slug); break;
     case 'embed':     body = viewEmbed(); break;
     case 'api':       body = viewAPI(); break;
-    case 'admin':     body = Store.can('view') ? viewAdmin(r.sub) : notFound('You do not have access to the admin console.'); break;
+    case 'admin':     body = viewAdmin(r.sub); break;
     default:          body = notFound();
   }
-  root.innerHTML = renderMasthead() + body + (r.name==='calendar'||r.name==='my'||r.name==='admin' ? '' : renderFooter());
+  if(r.name==='admin'){
+    document.documentElement.setAttribute('data-surface','cms');
+    root.innerHTML = renderAdminMasthead(r.sub) + body;
+  } else {
+    document.documentElement.setAttribute('data-surface','public');
+    root.innerHTML = renderMasthead() + body + (r.name==='calendar'||r.name==='my' ? '' : renderFooter());
+  }
   document.title = routeTitle(r);
   bindReveals();
   // preserve scroll on in-place updates (filters, tabs) but not on navigation
@@ -5278,7 +5500,7 @@ function routeTitle(r){
   const m = {home:base+' — One School. Three Campuses. One Shared Calendar.', calendar:'Calendar · '+base,
     my:'My PBIS Calendar · '+base, subscribe:'Subscribe · '+base, dates:'Important Dates · '+base,
     year:'Academic Year · '+base, signage:'Today at PBIS', embed:'Embed · '+base, api:'API · '+base,
-    admin:'Admin Console · '+base};
+    admin:'CMS · '+base};
   if(r.name==='event'){ const e=Store.state.events.find(x=>x.slug===r.slug); return (e?e.title+' · ':'')+base; }
   if(r.name==='campus'){ const c=CAMPUSES.find(x=>x.slug===r.slug); return (c?c.name+' · ':'')+base; }
   return m[r.name]||base;
