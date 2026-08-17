@@ -4016,8 +4016,23 @@ function viewAPI(){
    PBIS CENTRAL CALENDAR — ADMIN COMMAND CENTRE
    ========================================================================== */
 
+const IMPORT_SOURCES = [
+  ['CSV','Comma-separated spreadsheet export'],
+  ['XLSX','Excel workbook'],
+  ['ICS','iCalendar file or feed'],
+  ['Google','Google Calendar export']
+];
+const SRC_ACCEPT = { CSV:'.csv,.txt', XLSX:'.xlsx,.xls', ICS:'.ics,.txt', Google:'.ics,.csv,.zip' };
+const SRC_HINT = {
+  CSV:'The first row must contain column headings. Anything not recognised can be mapped by hand after the preview.',
+  XLSX:'Excel workbooks are not parsed in this prototype — save the sheet as CSV and upload that instead.',
+  ICS:'An iCalendar file from Google, Outlook or Apple Calendar. Repeat rules are read as repeat rules.',
+  Google:'Google Calendar → Settings → Import & export → Export. Unzip it first and upload the .ics inside.'
+};
+
 const AdminState = { selected:new Set(), sort:{key:'date',dir:1}, tab:'all', page:0, pageSize:50,
-  importRows:null, importMap:null, rollover:{step:0, decisions:{}} };
+  importRows:null, importMap:null, importText:null, importSrc:'CSV',
+  rollover:{step:0, decisions:{}, keep:new Set()} };
 PBIS.AdminState = AdminState;
 
 const ADMIN_NAV = [
@@ -4491,13 +4506,13 @@ function adminImport(){
       <div class="panel-head"><h3>1 · Choose a source</h3></div>
       <div class="panel-body">
         <div class="opt-grid mb-5">
-          ${[['CSV','Comma-separated spreadsheet export'],['XLSX','Excel workbook'],['ICS','iCalendar file or feed'],['Google','Google Calendar export']]
-            .map(([t,d],i)=>`<button class="opt" aria-pressed="${i===0}" data-act="imp-src"><b>${t}</b><small>${d}</small></button>`).join('')}
+          ${IMPORT_SOURCES
+            .map(([t,d])=>`<button class="opt" aria-pressed="${AdminState.importSrc===t}" data-act="imp-src" data-src="${t}"><b>${t}</b><small>${d}</small></button>`).join('')}
         </div>
         <div class="field">
           <label class="label" for="imp-file">Upload a file</label>
-          <input class="input" type="file" id="imp-file" accept=".csv,.txt,.ics" data-act="imp-file">
-          <span class="hint">CSV and ICS are parsed in the browser. XLSX is converted server-side in production.</span>
+          <input class="input" type="file" id="imp-file" accept="${SRC_ACCEPT[AdminState.importSrc]||'.csv,.txt,.ics'}" data-act="imp-file">
+          <span class="hint">${SRC_HINT[AdminState.importSrc]||''}</span>
         </div>
         <div class="field mt-5">
           <label class="label" for="imp-paste">…or paste rows directly</label>
@@ -4697,20 +4712,20 @@ function adminRollover(){
       <p class="muted mb-5">Add dates that are only known for the new year — examination timetables, public holidays and inter-school fixtures.</p>
       <div class="opt-grid">
         <a class="opt" href="#/admin/import"><b>Import a spreadsheet</b><small>CSV or XLSX with the new dates</small></a>
-        <button class="opt"><b>Import an ICS feed</b><small>Cambridge examination timetable</small></button>
-        <button class="opt"><b>Add manually</b><small>Create events one at a time</small></button>
-        <button class="opt"><b>Skip for now</b><small>Add dates later</small></button>
+        <a class="opt" href="#/admin/import"><b>Import an ICS feed</b><small>Cambridge examination timetable</small></a>
+        <button class="opt" data-act="new-event"><b>Add manually</b><small>Create events one at a time</small></button>
+        <button class="opt" data-act="ro-next"><b>Skip for now</b><small>Add dates later</small></button>
       </div>
     `:''}
 
     ${s.step===4?`
       <h3 class="display mb-4" style="font-size:var(--fs-xl)">Resolve conflicts</h3>
-      ${(()=>{const cf=allConflicts(); return cf.length?cf.slice(0,5).map(c=>`
+      ${(()=>{const cf=allConflicts().filter(c=>!AdminState.rollover.keep.has(c.b.id)); return cf.length?cf.slice(0,5).map(c=>`
         <div class="alert alert-warning">${I.alert}<div class="txt">
           <b>${esc(locName(c.locationId))} — ${T.fmtLong(c.date)}</b>
           <span class="body">“${esc(c.a.title)}” (${esc(timeLabel(c.a))}) overlaps “${esc(c.b.title)}” (${esc(timeLabel(c.b))}).</span></div>
           <div class="row row-tight"><button class="btn btn-outline btn-sm" data-act="edit-event-direct" data-id="${c.b.id}">Change time</button>
-          <button class="btn btn-ghost btn-sm">Keep anyway</button></div></div>`).join('')
+          <button class="btn btn-ghost btn-sm" data-act="ro-keep" data-id="${esc(c.b.id)}">Keep anyway</button></div></div>`).join('')
         : `<div class="alert alert-success">${I.checkCircle}<div class="txt"><b>No conflicts detected</b><span class="body">No location is double-booked in the new year.</span></div></div>`;})()}
     `:''}
 
@@ -5113,11 +5128,18 @@ const HEADER_MAP = [
 ];
 function guessTarget(h){ for(const [re,t] of HEADER_MAP) if(re.test(h.trim())) return t; return ''; }
 
-function buildImportPreview(text){
+/**
+ * @param override  Optional [{source,target}] from the column mapper. Any
+ *                  heading it names overrides the guess, so a corrected column
+ *                  is genuinely re-read rather than merely relabelled.
+ */
+function buildImportPreview(text, override){
   const rows = parseCSV(text);
   if(rows.length<2){ toast('Not enough rows — the first line must be column headings',{type:'warning'}); return; }
+  AdminState.importText = text;
   const headers = rows[0].map(h=>h.trim());
-  const map = headers.map(h=>({source:h, target:guessTarget(h)}));
+  const forced = new Map((override||[]).map(m=>[String(m.source), String(m.target||'')]));
+  const map = headers.map(h=>({source:h, target:forced.has(h)?forced.get(h):guessTarget(h)}));
   AdminState.importMap = map;
   AdminState.importRows = rows.slice(1).map(cells=>{
     const data = {title:'',date:'',endDate:'',start:'',end:'',allDay:false,campusId:null,yearGroupIds:[],
@@ -5336,10 +5358,18 @@ document.addEventListener('click', e=>{
       Store.audit('updated', s.id, s.title); toast('Changes requested — the submitter has been notified'); render(); break; }
 
     /* --- import --- */
+    case 'imp-src': { st(e);
+      const src=t.dataset.src;
+      if(src===AdminState.importSrc) break;
+      AdminState.importSrc=src;
+      // Say so at the moment of choosing rather than letting the upload fail.
+      if(src==='XLSX') toast('Excel workbooks are not parsed here — save as CSV first',{type:'warning'});
+      render(); break; }
     case 'imp-sample': st(e); buildImportPreview(SAMPLE_CSV); break;
     case 'imp-parse': { st(e); const ta=document.getElementById('imp-paste');
       if(ta && ta.value.trim()) buildImportPreview(ta.value); else toast('Paste some rows or upload a file first',{type:'warning'}); break; }
-    case 'imp-cancel': st(e); AdminState.importRows=null; AdminState.importMap=null; render(); break;
+    case 'imp-cancel': st(e); AdminState.importRows=null; AdminState.importMap=null;
+      AdminState.importText=null; render(); break;
     case 'imp-row': { const i=Number(t.dataset.i); AdminState.importRows[i].include=t.checked; break; }
     case 'imp-toggle-all': { st(e); const anyOn=AdminState.importRows.some(r=>r.include);
       AdminState.importRows.forEach(r=>{ if(r.status!=='error') r.include=!anyOn; }); render(); break; }
@@ -5361,6 +5391,12 @@ document.addEventListener('click', e=>{
       break;
     case 'ro-back': st(e); AdminState.rollover.step=Math.max(0,AdminState.rollover.step-1); render(); break;
     case 'ro-dec': st(e); AdminState.rollover.decisions[t.dataset.k]=t.dataset.v; render(); break;
+    case 'ro-keep': { st(e);
+      // Accept a double booking deliberately, so what is left on screen is
+      // genuinely what still needs attention.
+      AdminState.rollover.keep.add(t.dataset.id);
+      toast('Conflict accepted — the two events will both stand',{type:'success'});
+      render(); break; }
 
     /* --- session --- */
     case 'sign-in': { st(e); const id=t.dataset.id; Store.signIn(id);
@@ -5495,6 +5531,19 @@ document.addEventListener('input', e=>{
 document.addEventListener('change', e=>{
   const ps=e.target.closest('[data-act="page-size"]');
   if(ps){ AdminState.pageSize=Number(ps.value); AdminState.page=0; AdminState.selected.clear(); render(); return; }
+
+  // Correcting a column has to re-read the file against the corrected mapping.
+  // Relabelling the heading alone would leave every parsed row wrong while
+  // looking as though it had been fixed.
+  const mp=e.target.closest('[data-act="imp-map"]');
+  if(mp){
+    if(!AdminState.importText){ toast('Re-upload the file to change its mapping',{type:'warning'}); return; }
+    const override=[...document.querySelectorAll('[data-act="imp-map"]')]
+      .map(sel=>({source:sel.dataset.src, target:sel.value}));
+    buildImportPreview(AdminState.importText, override);
+    return;
+  }
+
   const el=e.target.closest('[data-act="imp-file"]'); if(!el||!el.files||!el.files[0]) return;
   const f=el.files[0]; const r=new FileReader();
   r.onload=()=>{
@@ -5505,17 +5554,64 @@ document.addEventListener('change', e=>{
   r.readAsText(f);
 });
 
+const unescapeIcs = s => String(s)
+  .replace(/\\n/gi,'\n').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\');
+
+/**
+ * Read one DTSTART / DTEND into school wall time. Three forms turn up, and
+ * Google emits all three:
+ *   DTSTART;VALUE=DATE:20260901              an all-day event
+ *   DTSTART;TZID=Asia/Bangkok:20260901T0830  a zoned instant
+ *   DTSTART:20260901T013000Z                 UTC
+ * Bangkok and Vientiane are both UTC+7 with no daylight saving, so a TZID of
+ * either is already school time. A UTC instant has to be shifted.
+ */
+function icsMoment(params, value){
+  if(!value) return {date:'', time:''};
+  const m = value.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?(Z)?)?$/);
+  if(!m) return {date:'', time:''};
+  let date = `${m[1]}-${m[2]}-${m[3]}`;
+  if(/VALUE=DATE(?!-TIME)/i.test(params) || !m[4]) return {date, time:''};
+  let hh = Number(m[4]), mm = Number(m[5]);
+  if(m[7]){ // UTC → Asia/Vientiane (+7, no DST)
+    const shifted = new Date(Date.UTC(+m[1], +m[2]-1, +m[3], hh, mm) + 420*60000);
+    date = shifted.toISOString().slice(0,10);
+    hh = shifted.getUTCHours(); mm = shifted.getUTCMinutes();
+  }
+  return {date, time:`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`};
+}
+
 function importICS(text){
   const blocks = text.split(/BEGIN:VEVENT/i).slice(1);
   const rows = blocks.map(b=>{
-    const get = k => { const m=b.match(new RegExp('^'+k+'[^:]*:(.*)$','mi')); return m?m[1].trim():''; };
-    const dtRaw = get('DTSTART'); const sumRaw = get('SUMMARY');
-    const date = dtRaw.replace(/[TZ].*$/,'').replace(/(\d{4})(\d{2})(\d{2})/,'$1-$2-$3');
-    const timeM = dtRaw.match(/T(\d{2})(\d{2})/);
-    const data = {title:sumRaw.replace(/\\,/g,','), date, endDate:'', start:timeM?`${timeM[1]}:${timeM[2]}`:'', end:'',
-      allDay:!timeM, campusId:null, yearGroupIds:[], categoryId:'other', audienceIds:['community'],
-      locationId:(LOCATIONS.find(l=>l.name.toLowerCase()===get('LOCATION').toLowerCase())||{}).id||null,
-      description:get('DESCRIPTION').replace(/\\n/g,'\n')};
+    // Unfold first: RFC 5545 wraps long lines and Google wraps almost every
+    // DESCRIPTION. Without this a folded SUMMARY or LOCATION is truncated.
+    b = b.replace(/\r?\n[ \t]/g,'');
+    const line = k => { const m=b.match(new RegExp('^'+k+'([^:]*):(.*)$','mi'));
+      return m ? {params:m[1]||'', value:m[2].trim()} : {params:'', value:''}; };
+    const get = k => line(k).value;
+
+    const S = line('DTSTART'), E = line('DTEND');
+    const start = icsMoment(S.params, S.value), end = icsMoment(E.params, E.value);
+    const allDay = !start.time;
+
+    // For an all-day event DTEND is exclusive (RFC 5545 3.8.2.2), so a single
+    // day reads as start+1. Step back a day to get the inclusive last day the
+    // school actually means, and drop it when the event is one day only.
+    let endDate = '';
+    if(allDay && end.date){
+      const inclusive = T.addDays(end.date, -1);
+      if(inclusive > start.date) endDate = inclusive;
+    } else if(end.date && end.date > start.date){
+      endDate = end.date;
+    }
+
+    const loc = unescapeIcs(get('LOCATION'));
+    const data = {title:unescapeIcs(get('SUMMARY')), date:start.date, endDate,
+      start:start.time||'', end:end.time||'',
+      allDay, campusId:null, yearGroupIds:[], categoryId:'other', audienceIds:['community'],
+      locationId:(LOCATIONS.find(l=>l.name.toLowerCase()===loc.toLowerCase())||{}).id||null,
+      description:unescapeIcs(get('DESCRIPTION'))};
     const ok = data.title && /^\d{4}-\d{2}-\d{2}$/.test(data.date);
     return {data, status:ok?'ready':'error', message:ok?'':'Could not read this VEVENT', include:ok};
   });
