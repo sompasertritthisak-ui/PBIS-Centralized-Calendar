@@ -26,18 +26,27 @@ node src/server.js
 Then open <http://localhost:3000/> for the calendar and
 <http://localhost:3000/admin> for the CMS.
 
-Demonstration accounts all share the password `pbis-demo`:
+After seeding, ten demonstration accounts exist, all sharing the password
+`pbis-demo`. **Remove them before this is reachable from the internet** — each
+one can sign in:
 
-| Email | Role |
-|---|---|
-| `s.vongsa@pbis.edu.la` | Super administrator |
-| `j.whitfield@pbis.edu.la` | Calendar administrator |
-| `a.keomany@pbis.edu.la` | Campus administrator — Primary |
-| `c.bennett@pbis.edu.la` | Campus administrator — Secondary |
-| `m.sisavath@pbis.edu.la` | Campus administrator — Early Years |
-| `d.okonkwo@pbis.edu.la` | Teacher — Secondary |
-| `n.phommachanh@parent.pbis.edu.la` | Parent |
-| `k.tran@student.pbis.edu.la` | Student |
+```bash
+node db/clear-demo-users.js --dry-run          # see what would go
+node db/clear-demo-users.js --yes --rename     # keep one admin, remove the rest
+```
+
+That keeps a single super administrator (renamed to `admin@pbis.edu.la`), and
+re-points everything the removed accounts touched — events they created,
+revisions, audit entries — at the surviving administrator, so nothing is
+orphaned and the history still names someone.
+
+Two more scripts for getting from demonstration data to real data:
+
+```bash
+node db/clear-demo-events.js --yes             # remove all events, keep taxonomy
+node db/import-google.js --pr-ey a.ics --se b.ics [--dry-run]
+node db/flag-internal.js [--dry-run|--revert]  # hide staff-only dates
+```
 
 ### Configuration
 
@@ -62,6 +71,10 @@ platform/
     migrations/001_init.sql     SQLite schema — the source of truth
     postgres/001_init.sql       Postgres port, kept in step by hand
     seed.js                     Canonical demonstration data
+    clear-demo-events.js        Remove every event, keep the structure
+    clear-demo-users.js         Remove the invented staff accounts
+    import-google.js            Import the school's real Google calendars
+    flag-internal.js            Hide staff-only dates from the public
   src/
     db.js                       Connection, migration runner, id/slug helpers
     auth.js                     scrypt, sessions, API keys, route guards
@@ -72,13 +85,15 @@ platform/
       recurrence.js             Occurrence expansion, RRULE in and out
       visibility.js             Roles, the permission matrix, SQL scoping
       ics.js                    RFC 5545 builder
+      icsparse.js               Reading iCalendar — one parser, shared
+      classify.js               Filing an imported event by campus/category
       origin.js                 Where this server thinks it lives
     routes/
       public.js  me.js  admin.js  data.js  feeds.js  pages.js
   public/                       The served front end (no build step)
     index.html  styles.css  app/01-core.js … app/07-boot.js
   test/
-    api.test.js                 188 assertions against the HTTP surface
+    api.test.js                 196 assertions against the HTTP surface
     ui.test.js                  43 assertions driving the real browser
     buttons.test.js             Clicks every control on every route
     buttons-verify.test.js      Settles the ones a click cannot judge
@@ -124,8 +139,15 @@ administrative action lands in an append-only audit log.
 
 Start the server, then:
 
+**Run the suites against a scratch database**, not your real one — they seed
+demonstration data and create events as they go:
+
 ```bash
-node test/api.test.js             # 188 assertions — HTTP surface, auth, ICS, SEO, limits
+PBIS_DATA_DIR=/tmp/pbis-test node test/api.test.js
+```
+
+```bash
+node test/api.test.js             # 196 assertions — HTTP surface, auth, ICS, SEO, limits
 node test/ui.test.js              # 43 assertions — real Chromium against the real server
 node test/buttons.test.js         # clicks all 321 controls across 20 routes
 node test/buttons-verify.test.js  # 22 assertions on what the sweep cannot judge
