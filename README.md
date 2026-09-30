@@ -8,9 +8,16 @@ The public calendar for Panyathip British International School.
 
 | File | What it is |
 |---|---|
-| `index.html` | The whole public calendar in one self-contained file |
+| `index.html` | The whole public calendar in one self-contained file — **generated**, do not edit by hand |
+| `site/` | The parts `index.html` is built from: `styles.css`, `app/*.js`, `data/events.js`, `brand/logo-sprite.svg`, `template.html` |
+| `scripts/build.js` | Assembles `site/` into `index.html` (`npm run build`) |
 | `admin.html` | A preview of the staff dashboard — see the warning below |
 | `.nojekyll` | Tells GitHub Pages to serve these files as-is |
+
+To change the public site: edit the files in `site/`, run `npm run build`, and
+commit both the part you changed and the regenerated `index.html`. The design
+system (`site/styles.css`) is shared verbatim with the platform's
+`public/styles.css`; keep them identical.
 
 `index.html` must stay at the **root** of the repository. GitHub Pages looks for
 `index.html` where the publish source begins; when it does not find one, it
@@ -18,9 +25,9 @@ falls back to rendering `README.md` as a web page. That is why this repository
 showed its README instead of the calendar — the calendar file was in a
 subfolder.
 
-Both files carry everything they need inside them: the fonts, the crest, the
-icons and the 201 published events are all embedded. There is nothing to build,
-nothing to install, and no other file to upload.
+Both files carry everything they need inside them: the crest, the icons and
+the 201 published events are all embedded. Nothing needs installing; the only
+step is `npm run build` after editing `site/`, and only `index.html` is served.
 
 ## What this site is, and what it is not
 

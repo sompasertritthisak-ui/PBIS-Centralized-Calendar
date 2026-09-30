@@ -231,7 +231,7 @@ PBIS.measureSticky = measureSticky;
 
 function routeTitle(r){
   const base = 'PBIS Central Calendar';
-  const m = {home:base+' — One School. Three Campuses. One Shared Calendar.', calendar:'Calendar · '+base,
+  const m = {home:base+' — From Laos to the World · Growing Generations · 25 Years of Excellence', calendar:'Calendar · '+base,
     my:'My PBIS Calendar · '+base, subscribe:'Subscribe · '+base, dates:'Important Dates · '+base,
     year:'Academic Year · '+base, signage:'Today at PBIS', embed:'Embed · '+base, api:'API · '+base,
     admin:'CMS · '+base};

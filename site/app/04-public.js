@@ -9,60 +9,43 @@ function viewHome(){
   const upcoming = query({from:T.addDays(today,0), to:T.addDays(today,75)})
     .filter(o=>o.isStart && o.ev.status==='published')
     .slice(0,6);
-  const important = query({from:today, to:T.addDays(today,300)})
-    .filter(o=>o.isStart && o.ev.important && ['published','draft'].includes(o.ev.status) && o.ev.status==='published')
-    .slice(0,5);
+  const keyDates = keyDatesFrom(today, 300);
+  const important = keyDates.list.slice(0,5);
   const term = termFor(today);
   const ay = activeAY();
-  const totalPublished = Store.state.events.filter(e=>e.status==='published').length;
 
   return `
   <main id="main">
     <!-- HERO -->
-    <section class="hero">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-light" aria-hidden="true"></div>
+      <div class="hero-rays" aria-hidden="true"></div>
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-grain" aria-hidden="true"></div>
       <div class="shell hero-in">
-        <div>
-          ${logo('full',188,{cls:'hero-logo',decorative:false,label:'Panyathip British International School — celebrating 25 years'})}
-          <div class="hero-kicker"><span class="line"></span><span class="eyebrow eyebrow-gold">The Official School Calendar</span></div>
-          <h1>PBIS Central<br><em>Calendar</em></h1>
-          <p class="hero-sub">One School. <span>Three Campuses.</span> One Shared Calendar.</p>
-          <p class="hero-copy">Stay connected with what's happening across the PBIS community — from Nursery to Year 13. Every official event, in one place, always current.</p>
-          <div class="hero-cta">
-            <a class="btn btn-gold btn-lg" href="#/calendar">${I.calendar}View Calendar</a>
-            <a class="btn btn-on-dark btn-lg" href="#/my">${I.star}Find My Events</a>
-          </div>
-          <div class="hero-stats">
-            <div class="hero-stat"><b>${CAMPUSES.length}</b><span>Campuses</span></div>
-            <div class="hero-stat"><b>${YEAR_GROUPS.length}</b><span>Year Groups</span></div>
-            <div class="hero-stat"><b>${totalPublished}</b><span>Published Events</span></div>
-            <div class="hero-stat"><b>${ay?ay.name:'—'}</b><span>Academic Year</span></div>
-          </div>
+        <div class="rise rise-1">
+          ${logo('full',330,{cls:'hero-logo',decorative:false,label:'Panyathip British International School — 25th Anniversary'})}
         </div>
-        <div class="hero-panel">
-          <div class="hero-panel-head">
-            <h3>Today at PBIS</h3>
-            <time class="mono" datetime="${today}">${T.fmtMed(today).toUpperCase()}</time>
-          </div>
-          ${todays.length ? todays.slice(0,5).map(o=>`
-            <button class="hero-ev" data-act="open-event" data-id="${o.ev.id}" data-date="${o.date}">
-              <span class="t">${o.ev.allDay?'ALL DAY':esc(o.ev.start||'')}</span>
-              <span>
-                <span class="n">${esc(o.ev.title)}</span>
-                <span class="m">
-                  <span>${esc(campusName(o.ev.campusId))}</span>
-                  ${o.ev.locationId?`<span>${esc(locName(o.ev.locationId))}</span>`:''}
-                </span>
-              </span>
-            </button>`).join('')
-          : `<p style="color:#95B3A2;font-size:var(--fs-base);padding:var(--s-4) 0">No events scheduled today.
-             ${term?`We are in ${esc(term.name)}.`:'The school is currently between terms.'}</p>`}
-          <a class="btn btn-on-dark btn-block mt-4" href="#/calendar">${I.arrowRight}See the full calendar</a>
+        <div class="hero-eyebrow rise rise-2"><span class="line"></span><span class="eyebrow">Panyathip British International School</span><span class="line"></span></div>
+        <h1 id="hero-title" class="hero-titles">
+          <span class="t1 rise rise-3">From Laos to the World</span>
+          <span class="t2 rise rise-4">Growing Generations</span>
+          <span class="t3 rise rise-5">25 Years of Excellence</span>
+        </h1>
+        <p class="hero-sub rise rise-6">PBIS Central Calendar — One School. <span>Three Campuses.</span> One Shared Calendar.</p>
+        <p class="hero-copy rise rise-6">Every official event from Nursery to Year 13, in one place, always current.</p>
+        <div class="hero-cta rise rise-7">
+          <a class="btn btn-gold btn-lg" href="#/calendar">${I.calendar}View Calendar</a>
+          <a class="btn btn-on-dark btn-lg" href="#/my">${I.star}Find My Events</a>
         </div>
+        ${yearRail(today, ay, term)}
       </div>
     </section>
 
+    ${nowStrip(today, todays, term)}
+
     <!-- TODAY DETAIL -->
-    <section class="section">
+    ${todays.length?`<section class="section">
       <div class="shell">
         <div class="sec-head reveal">
           <div>
@@ -78,7 +61,7 @@ function viewHome(){
             <p>There are no events in the calendar for ${T.fmtLong(today)}. Check what's coming up below.</p></div>`}
         </div>
       </div>
-    </section>
+    </section>`:''}
 
     <!-- COMING UP -->
     <section class="section section-sunken">
@@ -138,17 +121,19 @@ function viewHome(){
           ${CAMPUSES.map(c=>{
             const n = query({from:today,to:T.addDays(today,120),filters:{campusIds:[c.id]}}).filter(o=>o.isStart&&o.ev.campusId===c.id).length;
             const ygs = YEAR_GROUPS.filter(y=>y.campusId===c.id);
-            return `<a class="card card-pad reveal" href="#/campus/${c.slug}" style="display:block;border-left:3px solid ${c.colour};transition:box-shadow var(--dur-2),transform var(--dur-2)">
-              <span class="eyebrow">${esc(c.short)}</span>
-              <h3 class="display mt-2" style="font-size:var(--fs-xl)">${esc(c.name)}</h3>
-              <p class="muted mt-3" style="font-size:var(--fs-base);line-height:1.6">${esc(c.blurb)}</p>
-              <div class="row row-tight mt-4">
-                <span class="badge badge-neutral">${ygs.length} year groups</span>
-                <span class="badge badge-neutral">${n} upcoming</span>
-              </div>
-              <div class="row mt-4" style="color:var(--accent-strong);font-weight:600;font-size:var(--fs-sm)">
-                View ${esc(c.name)} calendar ${I.arrowRight}
-              </div>
+            return `<a class="campus-card reveal" href="#/campus/${c.slug}" style="--c:${c.colour}" aria-label="${esc(c.name)} calendar — ${n} upcoming events">
+              <span class="plate">
+                <span><span class="eyebrow">${esc(c.short)}</span><h3 class="mt-2">${esc(c.name)}</h3></span>
+                <span style="text-align:right"><b>${n}</b><small>upcoming</small></span>
+              </span>
+              <span class="body">
+                <p class="muted" style="font-size:var(--fs-base);line-height:1.6">${esc(c.blurb)}</p>
+                <span class="row row-tight mt-4">
+                  <span class="badge badge-neutral">${ygs.length} year groups</span>
+                  <span class="badge badge-neutral">Next 4 months</span>
+                </span>
+                <span class="go">View ${esc(c.name)} calendar ${I.arrowRight}</span>
+              </span>
             </a>`;
           }).join('')}
         </div>
@@ -161,8 +146,8 @@ function viewHome(){
         <div class="sec-head reveal">
           <div>
             <span class="eyebrow eyebrow-gold">Diary essentials</span>
-            <h2 class="mt-2">Important Dates</h2>
-            <p>The dates the school asks every family to note. Used sparingly, on purpose.</p>
+            <h2 class="mt-2">${keyDates.flagged?'Important Dates':'Key Dates'}</h2>
+            <p>${keyDates.flagged?'The dates the school asks every family to note. Used sparingly, on purpose.':'Holidays, exams, deadlines and graduations — the dates that shape the term.'}</p>
           </div>
           <a class="btn btn-outline" href="#/dates">${I.star}All important dates</a>
         </div>
@@ -175,7 +160,7 @@ function viewHome(){
                 <span class="title">${esc(o.ev.title)}</span>
                 <span class="sub"><span>${esc(campusName(o.ev.campusId))}</span><span>${esc(catName(o.ev.categoryId))}</span><span>${esc(T.relative(o.date))}</span></span>
               </span>
-              <span class="right"><span class="badge badge-important">${I.star}Important</span></span>
+              <span class="right"><span class="badge badge-important">${I.star}${o.ev.important?'Important':catName(o.ev.categoryId)}</span></span>
             </button>`).join('') || emptyCard('No important dates flagged')}
         </div>
       </div>
@@ -209,6 +194,90 @@ function viewHome(){
       </div>
     </section>
   </main>`;
+}
+
+/* The academic year as one line: term blocks on a dashed track, today marked
+   on it. Positions are days elapsed over days in the year, so the rail is
+   honest about how much of the year is behind us. */
+function yearRail(today, ay, term){
+  if(!ay) return '';
+  const terms = Store.state.terms.filter(t=>t.ayId===ay.id).sort((a,b)=>a.order-b.order);
+  if(!terms.length) return '';
+  const total = Math.max(1, T.diffDays(ay.start, ay.end));
+  const pct = k => (Math.min(100, Math.max(0, T.diffDays(ay.start, k)/total*100))).toFixed(2)+'%';
+  const dm = k => { const d=T.parse(k); return `${d.getUTCDate()} ${T.MON[d.getUTCMonth()]}`; };
+  let status;
+  if(term){
+    status = `${term.name} · Day ${T.diffDays(term.start,today)+1} of ${T.diffDays(term.start,term.end)+1}`;
+  } else if(today < ay.start){
+    status = `${terms[0].name} begins in ${T.diffDays(today, terms[0].start)} days`;
+  } else {
+    const next = terms.find(t=>t.start>today);
+    status = next ? `Holiday · ${next.name} begins ${dm(next.start)}` : 'Academic year complete';
+  }
+  const inYear = today>=ay.start && today<=ay.end;
+  return `
+  <div class="year-rail rise rise-8" role="group" aria-label="Academic year ${esc(ay.name)} at a glance">
+    <div class="rail-head">
+      <span class="eyebrow">Academic year ${esc(ay.name)}</span>
+      <span class="rail-status">${esc(status)}</span>
+    </div>
+    <div class="rail-track">
+      ${terms.map(t=>{
+        const state = t.end<today?'is-past':(t.start<=today&&today<=t.end?'is-current':'');
+        return `<a class="rail-term ${state}" style="--from:${pct(t.start)};--to:${pct(T.addDays(t.end,1))}" href="#/year"
+          aria-label="${esc(t.name)}, ${dm(t.start)} to ${dm(t.end)}"><b>${esc(t.name)}</b><small>${dm(t.start)} – ${dm(t.end)}</small></a>`;
+      }).join('')}
+      ${inYear?`<span class="rail-now" style="--at:${pct(today)}" aria-hidden="true"><i></i><b>Today</b></span>`:''}
+    </div>
+  </div>`;
+}
+
+/* Dates flagged important by the school; when none are flagged, the categories
+   that shape a term (holidays, exams, deadlines, graduations) stand in. */
+const KEY_DATE_CATEGORIES = ['holiday','exam','deadline','graduation','admissions'];
+function keyDatesFrom(today, days){
+  const occ = query({from:today, to:T.addDays(today,days), personalise:false})
+    .filter(o=>o.isStart && o.ev.status==='published');
+  const flagged = occ.filter(o=>o.ev.important);
+  if(flagged.length) return {flagged:true, list:flagged};
+  return {flagged:false, list:occ.filter(o=>KEY_DATE_CATEGORIES.includes(o.ev.categoryId))};
+}
+
+/* Three questions a family actually has: what is on today, what is next, and
+   what is the next date we must not miss. */
+function nowStrip(today, todays, term){
+  const nextUp = query({from:T.addDays(today,1), to:T.addDays(today,120), personalise:false})
+    .filter(o=>o.isStart && o.ev.status==='published')[0];
+  const kd = keyDatesFrom(today, 400);
+  const nextImp = kd.list[0];
+  const nextLabel = kd.flagged ? 'Next important date' : 'Next key date';
+  const countdown = k => { const n=T.diffDays(today,k); return n===0?'Today':n===1?'Tomorrow':`In ${n} days`; };
+  const first = todays[0];
+  const cell = (attrs, k, v, m) => `<${attrs.tag} class="now-cell" ${attrs.a}>
+      <span class="k">${attrs.icon}${k}</span>
+      <span class="v">${v}</span>
+      <span class="m">${m}</span>
+      <span class="go">${I.arrowRight}</span>
+    </${attrs.tag}>`;
+  return `
+  <section class="now-strip" aria-label="At a glance">
+    <div class="shell now-in">
+      ${cell({tag:'a', a:'href="#/calendar"', icon:I.calendarCheck}, 'Today',
+        todays.length ? esc(first.ev.title) : 'No events today',
+        todays.length
+          ? `<b>${todays.length} event${todays.length===1?'':'s'}</b><span>${esc(T.fmtMed(today))}</span>${todays.length>1?`<span>+${todays.length-1} more</span>`:''}`
+          : `<span>${esc(T.fmtMed(today))}</span><span>${term?esc(term.name):'Between terms'}</span>`)}
+      ${nextUp
+        ? cell({tag:'button', a:`type="button" data-act="open-event" data-id="${nextUp.ev.id}" data-date="${nextUp.date}"`, icon:I.clock}, 'Next up',
+            esc(nextUp.ev.title), `<b>${countdown(nextUp.date)}</b><span>${esc(T.fmtMed(nextUp.date))}</span><span>${esc(campusName(nextUp.ev.campusId))}</span>`)
+        : cell({tag:'a', a:'href="#/calendar"', icon:I.clock}, 'Next up', 'Nothing scheduled yet', '<span>Check back soon</span>')}
+      ${nextImp
+        ? cell({tag:'button', a:`type="button" data-act="open-event" data-id="${nextImp.ev.id}" data-date="${nextImp.date}"`, icon:I.star}, nextLabel,
+            esc(nextImp.ev.title), `<b>${countdown(nextImp.date)}</b><span>${esc(T.fmtMed(nextImp.date))}</span><span>${esc(catName(nextImp.ev.categoryId))}</span>`)
+        : cell({tag:'a', a:'href="#/dates"', icon:I.star}, nextLabel, 'None flagged', '<span>See all important dates</span>')}
+    </div>
+  </section>`;
 }
 
 function todayRow(o){

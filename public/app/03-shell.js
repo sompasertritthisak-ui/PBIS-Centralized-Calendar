@@ -82,7 +82,7 @@ function renderFooter(){
       <div class="footer-grid">
         <div>
           ${logo('full',150,{cls:'footer-logo',decorative:false,label:'Panyathip British International School — 25th Anniversary'})}
-          <div class="footer-word">One School.<br>Three Campuses.<br><em>One Shared Calendar.</em></div>
+          <div class="footer-word">From Laos to the World.<br>Growing Generations.<br><em>25 Years of Excellence.</em></div>
           <p class="mt-5" style="font-size:var(--fs-sm);max-width:42ch;line-height:1.7">
             PBIS Central Calendar is the official source of truth for events at Panyathip British International School.
             Every event is created once and distributed everywhere.
@@ -513,7 +513,11 @@ function bindReveals(){
   if(Store.state.prefs.motion==='off'){ document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in')); return; }
   if(revealObserver) revealObserver.disconnect();
   revealObserver = new IntersectionObserver(entries=>{
-    entries.forEach((en,i)=>{ if(en.isIntersecting){ en.target.style.transitionDelay=(Math.min(i,6)*45)+'ms'; en.target.classList.add('in'); revealObserver.unobserve(en.target); } });
+    entries.forEach((en,i)=>{ if(en.isIntersecting){ en.target.style.transitionDelay=(Math.min(i,4)*40)+'ms'; en.target.classList.add('in'); revealObserver.unobserve(en.target); } });
   },{rootMargin:'0px 0px -8% 0px', threshold:.06});
   document.querySelectorAll('.reveal:not(.in)').forEach(el=>revealObserver.observe(el));
+  // Safety net: nothing stays invisible if the observer never fires (fast
+  // scrolls, print, odd embeds). After a beat, everything is shown.
+  clearTimeout(bindReveals._t);
+  bindReveals._t=setTimeout(()=>document.querySelectorAll('.reveal:not(.in)').forEach(el=>el.classList.add('in')),1600);
 }
