@@ -18,15 +18,20 @@ function viewHome(){
   <main id="main">
     <!-- HERO -->
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-light" aria-hidden="true"></div>
-      <div class="hero-rays" aria-hidden="true"></div>
-      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-stage" aria-hidden="true">${yearFloor(today, ay)}</div>
+      <div class="hero-horizon" aria-hidden="true"></div>
+      <div class="hero-pool" aria-hidden="true"></div>
+      <div class="hero-beam" aria-hidden="true"></div>
+      <div class="hero-haze a" aria-hidden="true"></div><div class="hero-haze b" aria-hidden="true"></div>
+      <canvas class="hero-dust" id="hero-dust" aria-hidden="true"></canvas>
+      <div class="hero-scrim" aria-hidden="true"></div>
+      <div class="hero-vignette" aria-hidden="true"></div>
       <div class="hero-grain" aria-hidden="true"></div>
       <div class="shell hero-in">
         <div class="rise rise-1">
           ${logo('full',330,{cls:'hero-logo',decorative:false,label:'Panyathip British International School — 25th Anniversary'})}
         </div>
-        <div class="hero-eyebrow rise rise-2"><span class="line"></span><span class="eyebrow">Panyathip British International School</span><span class="line"></span></div>
+        <div class="hero-eyebrow rise rise-2"><span class="line"></span><span class="eyebrow">The official school calendar · Vientiane, Laos</span><span class="line"></span></div>
         <h1 id="hero-title" class="hero-titles">
           <span class="t1 rise rise-3">From Laos to the World</span>
           <span class="t2 rise rise-4">Growing Generations</span>
@@ -40,6 +45,7 @@ function viewHome(){
         </div>
         ${yearRail(today, ay, term)}
       </div>
+      <div class="hero-legend" aria-hidden="true"><i></i><span>Every light is a published day of ${ay?esc(ay.name):'the year'}</span></div>
     </section>
 
     ${nowStrip(today, todays, term)}
@@ -195,6 +201,54 @@ function viewHome(){
     </section>
   </main>`;
 }
+
+/* The floor of the stage: the academic year as a 53-week × 7-day grid, each
+   day a cell, lit in proportion to how much is published on it. */
+function yearFloor(today, ay){
+  if(!ay) return '';
+  const start = T.startOfWeek(ay.start);
+  const counts = {};
+  query({from:ay.start, to:ay.end, personalise:false}).forEach(o=>{ if(o.ev.status==='published') counts[o.date]=(counts[o.date]||0)+1; });
+  const max = Math.max(1, ...Object.values(counts));
+  const cells = [];
+  for(let i=0;i<53*7;i++){
+    const k = T.addDays(start, i);
+    const n = counts[k]||0;
+    const cls = k===today ? 'd today' : n ? 'd on'+(k<today?' past':'') : 'd off';
+    cells.push(`<i class="${cls}" style="--i:${i}${n?`;--l:${(n/max).toFixed(2)}`:''}"></i>`);
+  }
+  return `<div class="hero-floor">${cells.join('')}</div>`;
+}
+
+/* Dust in the beam. A handful of motes drifting up through the light; it
+   stops when the hero scrolls away, and never starts when motion is off. */
+function startHeroDust(){
+  const c = document.getElementById('hero-dust');
+  if(!c) return;
+  if(Store.state.prefs.motion==='off' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ctx = c.getContext('2d');
+  let w=0,h=0,raf=0,running=false;
+  const motes = Array.from({length:70},()=>({x:Math.random(),y:Math.random(),r:.6+Math.random()*1.6,v:.00018+Math.random()*.00035,a:.15+Math.random()*.45,ph:Math.random()*Math.PI*2}));
+  const size=()=>{ const r=c.getBoundingClientRect(); w=c.width=Math.max(1,Math.round(r.width)); h=c.height=Math.max(1,Math.round(r.height)); };
+  const tick=(t)=>{
+    if(!running) return;
+    ctx.clearRect(0,0,w,h);
+    for(const m of motes){
+      m.y -= m.v; if(m.y<-.02){ m.y=1.02; m.x=Math.random(); }
+      const x=(m.x + Math.sin(t/4000+m.ph)*.012)*w, y=m.y*h;
+      const inBeam = Math.abs(x-w/2) < (y/h)*w*.42+w*.06;
+      ctx.beginPath(); ctx.arc(x,y,m.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,226,140,${(inBeam?m.a:m.a*.25)*(.7+.3*Math.sin(t/900+m.ph))})`; ctx.fill();
+    }
+    raf=requestAnimationFrame(tick);
+  };
+  const start=()=>{ if(running) return; running=true; size(); raf=requestAnimationFrame(tick); };
+  const stop=()=>{ running=false; cancelAnimationFrame(raf); };
+  new IntersectionObserver(([e])=>e.isIntersecting?start():stop()).observe(c);
+  window.addEventListener('resize', size, {passive:true});
+  document.addEventListener('visibilitychange', ()=>document.hidden?stop():start());
+}
+PBIS.startHeroDust = startHeroDust;
 
 /* The academic year as one line: term blocks on a dashed track, today marked
    on it. Positions are days elapsed over days in the year, so the rail is

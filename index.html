@@ -496,35 +496,65 @@ html[data-theme="dark"] .acct .avatar{background:var(--forest-600);color:#EAF3ED
 .footer-word em{color:var(--gold-300);font-style:normal}
 
 /* ---------------- Hero ----------------
-   House lights down. One gold source above the crest, the forest below it.
-   The 25th-anniversary lockup is the boldest thing on the page; the three
-   titles beneath it are the school's anniversary statement. Nothing glows or
-   shadows the artwork itself — the light lives in the layers behind it.   */
+   A stage. One spotlight falls from above onto the 25th-anniversary lockup;
+   the floor it stands on is the academic year itself — every day a cell,
+   every published day lit, today burning brightest, receding to the horizon.
+   Nothing glows or shadows the artwork; the light is in the room, not on it. */
 .hero{
   position:relative;isolation:isolate;overflow:hidden;
-  background:var(--forest-950);color:#fff;
+  background:#04110B;color:#fff;
   min-height:calc(100dvh - var(--header-h));
   display:flex;flex-direction:column;justify-content:center;
-  padding:var(--s-16) 0 var(--s-16);
+  padding:var(--s-16) 0 var(--s-20);
 }
-@media(max-width:768px){.hero{padding:var(--s-10) 0 var(--s-10);min-height:0}}
-.hero-light,.hero-rays,.hero-grid,.hero-grain{position:absolute;inset:0;pointer-events:none}
-.hero-light{z-index:0;background:
-  radial-gradient(46% 38% at 50% 22%,rgba(231,187,32,.30),transparent 72%),
-  radial-gradient(70% 46% at 50% 108%,rgba(37,98,71,.42),transparent 70%),
-  radial-gradient(34% 30% at 8% 46%,rgba(61,128,98,.16),transparent 70%),
-  radial-gradient(34% 30% at 94% 40%,rgba(61,128,98,.14),transparent 70%)}
-.hero-rays{z-index:0;overflow:hidden}
-.hero-rays::before{content:"";position:absolute;left:50%;top:-58vmax;width:160vmax;height:160vmax;transform:translateX(-50%);
-  background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(231,187,32,.055) 0deg 1.1deg,transparent 1.1deg 7.3deg);
-  mask-image:radial-gradient(52% 52% at 50% 50%,#000 0%,rgba(0,0,0,.5) 34%,transparent 62%);
-  animation:heroRays 160s linear infinite;will-change:transform}
-@keyframes heroRays{to{transform:translateX(-50%) rotate(360deg)}}
-.hero-grid{z-index:0;opacity:.55;
-  background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
-  background-size:64px 64px;mask-image:radial-gradient(60% 55% at 50% 40%,#000,transparent 80%)}
-.hero-grain{z-index:0;opacity:.07;mix-blend-mode:overlay;
+@media(max-width:768px){.hero{padding:var(--s-10) 0 var(--s-12);min-height:0}}
+.hero-stage{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  perspective:1000px;perspective-origin:50% 34%}
+/* the year, as a floor */
+.hero-floor{
+  position:absolute;left:50%;bottom:-52%;width:min(1560px,200vw);height:1900px;
+  transform:translateX(-50%) rotateX(78deg);transform-origin:50% 100%;
+  display:grid;grid-template-columns:repeat(53,1fr);grid-template-rows:repeat(7,1fr);
+  grid-auto-flow:column;gap:64px 7px;opacity:.78;
+  mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.35) 22%,#000 48%,#000 86%,transparent 100%);
+}
+.hero-floor .d{position:relative;border-radius:2px;background:rgba(255,255,255,.022);
+  animation:dayOn .7s var(--ease-out) both;animation-delay:calc(var(--i) * 4ms + .35s)}
+.hero-floor .d.off{background:rgba(255,255,255,.012)}
+.hero-floor .d.on{background:rgba(231,187,32,calc(.2 + var(--l) * .5));
+  box-shadow:0 0 6px rgba(231,187,32,calc(.25 + var(--l) * .45)),0 0 18px rgba(231,187,32,calc(var(--l) * .3))}
+.hero-floor .d.past{opacity:.5}
+.hero-floor .d.today{background:#FFF2BF;box-shadow:0 0 18px #FFE58A,0 0 60px rgba(231,187,32,.9),0 0 120px rgba(231,187,32,.5);animation:dayOn .7s var(--ease-out) both,todayPulse 3.2s ease-in-out 2.4s infinite}
+@keyframes dayOn{from{opacity:0;transform:translateY(8px)}to{transform:none}}
+@keyframes todayPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.6)}}
+/* the horizon the floor runs to, and the darkness past it */
+.hero-horizon{position:absolute;left:0;right:0;top:0;height:62%;z-index:0;pointer-events:none;
+  background:linear-gradient(180deg,#02090 0%,#04110B 55%,transparent 100%)}
+/* the beam: a soft cone from above, and the pool it makes on the floor */
+.hero-beam{position:absolute;left:50%;top:-6%;width:min(560px,80vw);height:92%;z-index:0;pointer-events:none;
+  transform:translateX(-50%);
+  background:linear-gradient(180deg,rgba(255,236,170,.26) 0%,rgba(231,187,32,.14) 36%,rgba(231,187,32,.05) 70%,transparent 100%);
+  clip-path:polygon(44% 0,56% 0,100% 100%,0 100%);filter:blur(22px);
+  animation:beamBreathe 9s ease-in-out infinite}
+.hero-pool{position:absolute;left:50%;top:30%;width:min(1100px,130vw);height:52%;z-index:0;pointer-events:none;transform:translateX(-50%);
+  background:radial-gradient(50% 40% at 50% 30%,rgba(231,187,32,.22),rgba(231,187,32,.06) 45%,transparent 72%)}
+@keyframes beamBreathe{0%,100%{opacity:.85}50%{opacity:1}}
+.hero-haze{position:absolute;z-index:0;pointer-events:none;border-radius:50%;filter:blur(60px);opacity:.14;background:#E7BB20;mix-blend-mode:screen}
+.hero-haze.a{width:52vw;height:30vw;left:14%;top:18%;animation:haze 26s ease-in-out infinite alternate}
+.hero-haze.b{width:44vw;height:26vw;right:8%;top:34%;opacity:.09;animation:haze 34s ease-in-out -12s infinite alternate}
+@keyframes haze{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(6vw,-3vw,0) scale(1.12)}}
+.hero-dust{position:absolute;inset:0;z-index:0;pointer-events:none;mix-blend-mode:screen}
+.hero-scrim{position:absolute;left:0;right:0;top:34%;height:58%;z-index:0;pointer-events:none;
+  background:radial-gradient(55% 60% at 50% 45%,rgba(3,12,8,.82) 0%,rgba(3,12,8,.55) 45%,transparent 75%)}
+.hero-vignette{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(80% 70% at 50% 42%,transparent 40%,rgba(2,9,6,.55) 78%,rgba(2,9,6,.92) 100%)}
+.hero-grain{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.08;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* the floor's legend: a quiet note, bottom-right, that the lights are real */
+.hero-legend{position:absolute;right:var(--s-6);bottom:var(--s-4);z-index:1;display:flex;gap:var(--s-3);align-items:center;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7FA08F}
+.hero-legend i{width:8px;height:8px;border-radius:2px;background:#E7BB20;box-shadow:0 0 10px rgba(231,187,32,.8)}
+@media(max-width:768px){.hero-legend{position:static;justify-content:center;margin-top:var(--s-8)}}
 .hero-in{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center}
 .hero-logo{width:clamp(196px,26vw,330px);height:auto;margin:0 auto}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:var(--s-3);margin-top:var(--s-8)}
@@ -534,7 +564,7 @@ html[data-theme="dark"] .acct .avatar{background:var(--forest-600);color:#EAF3ED
 /* The three titles. Each is a line of the one h1 — one statement, three beats. */
 .hero-titles{margin:var(--s-5) 0 0;font-weight:500;letter-spacing:0;line-height:1}
 .hero-titles span{display:block;font-family:var(--font-display);text-wrap:balance}
-.hero-titles .t1{font-size:clamp(2.1rem,5.1vw,4.1rem);font-weight:500;letter-spacing:-.02em;line-height:1.06;color:#F6F8F5;text-shadow:0 2px 28px rgba(0,0,0,.35)}
+.hero-titles .t1{font-size:clamp(2.1rem,5.1vw,4.1rem);font-weight:500;letter-spacing:-.02em;line-height:1.06;color:#F6F8F5;text-shadow:0 2px 28px rgba(0,0,0,.5)}
 .hero-titles .t2{
   font-size:clamp(2.75rem,7.2vw,5.9rem);font-style:italic;font-weight:500;line-height:1.02;letter-spacing:-.01em;
   margin-top:.06em;padding:.02em .12em .1em;
@@ -2679,15 +2709,20 @@ function viewHome(){
   <main id="main">
     <!-- HERO -->
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-light" aria-hidden="true"></div>
-      <div class="hero-rays" aria-hidden="true"></div>
-      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-stage" aria-hidden="true">${yearFloor(today, ay)}</div>
+      <div class="hero-horizon" aria-hidden="true"></div>
+      <div class="hero-pool" aria-hidden="true"></div>
+      <div class="hero-beam" aria-hidden="true"></div>
+      <div class="hero-haze a" aria-hidden="true"></div><div class="hero-haze b" aria-hidden="true"></div>
+      <canvas class="hero-dust" id="hero-dust" aria-hidden="true"></canvas>
+      <div class="hero-scrim" aria-hidden="true"></div>
+      <div class="hero-vignette" aria-hidden="true"></div>
       <div class="hero-grain" aria-hidden="true"></div>
       <div class="shell hero-in">
         <div class="rise rise-1">
           ${logo('full',330,{cls:'hero-logo',decorative:false,label:'Panyathip British International School — 25th Anniversary'})}
         </div>
-        <div class="hero-eyebrow rise rise-2"><span class="line"></span><span class="eyebrow">Panyathip British International School</span><span class="line"></span></div>
+        <div class="hero-eyebrow rise rise-2"><span class="line"></span><span class="eyebrow">The official school calendar · Vientiane, Laos</span><span class="line"></span></div>
         <h1 id="hero-title" class="hero-titles">
           <span class="t1 rise rise-3">From Laos to the World</span>
           <span class="t2 rise rise-4">Growing Generations</span>
@@ -2701,6 +2736,7 @@ function viewHome(){
         </div>
         ${yearRail(today, ay, term)}
       </div>
+      <div class="hero-legend" aria-hidden="true"><i></i><span>Every light is a published day of ${ay?esc(ay.name):'the year'}</span></div>
     </section>
 
     ${nowStrip(today, todays, term)}
@@ -2856,6 +2892,54 @@ function viewHome(){
     </section>
   </main>`;
 }
+
+/* The floor of the stage: the academic year as a 53-week × 7-day grid, each
+   day a cell, lit in proportion to how much is published on it. */
+function yearFloor(today, ay){
+  if(!ay) return '';
+  const start = T.startOfWeek(ay.start);
+  const counts = {};
+  query({from:ay.start, to:ay.end, personalise:false}).forEach(o=>{ if(o.ev.status==='published') counts[o.date]=(counts[o.date]||0)+1; });
+  const max = Math.max(1, ...Object.values(counts));
+  const cells = [];
+  for(let i=0;i<53*7;i++){
+    const k = T.addDays(start, i);
+    const n = counts[k]||0;
+    const cls = k===today ? 'd today' : n ? 'd on'+(k<today?' past':'') : 'd off';
+    cells.push(`<i class="${cls}" style="--i:${i}${n?`;--l:${(n/max).toFixed(2)}`:''}"></i>`);
+  }
+  return `<div class="hero-floor">${cells.join('')}</div>`;
+}
+
+/* Dust in the beam. A handful of motes drifting up through the light; it
+   stops when the hero scrolls away, and never starts when motion is off. */
+function startHeroDust(){
+  const c = document.getElementById('hero-dust');
+  if(!c) return;
+  if(Store.state.prefs.motion==='off' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ctx = c.getContext('2d');
+  let w=0,h=0,raf=0,running=false;
+  const motes = Array.from({length:70},()=>({x:Math.random(),y:Math.random(),r:.6+Math.random()*1.6,v:.00018+Math.random()*.00035,a:.15+Math.random()*.45,ph:Math.random()*Math.PI*2}));
+  const size=()=>{ const r=c.getBoundingClientRect(); w=c.width=Math.max(1,Math.round(r.width)); h=c.height=Math.max(1,Math.round(r.height)); };
+  const tick=(t)=>{
+    if(!running) return;
+    ctx.clearRect(0,0,w,h);
+    for(const m of motes){
+      m.y -= m.v; if(m.y<-.02){ m.y=1.02; m.x=Math.random(); }
+      const x=(m.x + Math.sin(t/4000+m.ph)*.012)*w, y=m.y*h;
+      const inBeam = Math.abs(x-w/2) < (y/h)*w*.42+w*.06;
+      ctx.beginPath(); ctx.arc(x,y,m.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,226,140,${(inBeam?m.a:m.a*.25)*(.7+.3*Math.sin(t/900+m.ph))})`; ctx.fill();
+    }
+    raf=requestAnimationFrame(tick);
+  };
+  const start=()=>{ if(running) return; running=true; size(); raf=requestAnimationFrame(tick); };
+  const stop=()=>{ running=false; cancelAnimationFrame(raf); };
+  new IntersectionObserver(([e])=>e.isIntersecting?start():stop()).observe(c);
+  window.addEventListener('resize', size, {passive:true});
+  document.addEventListener('visibilitychange', ()=>document.hidden?stop():start());
+}
+PBIS.startHeroDust = startHeroDust;
 
 /* The academic year as one line: term blocks on a dashed track, today marked
    on it. Positions are days elapsed over days in the year, so the rail is
@@ -4124,6 +4208,7 @@ function render(){
   root.innerHTML = renderMasthead() + body + (r.name==='calendar'||r.name==='my' ? '' : renderFooter());
   document.title = routeTitle(r);
   bindReveals();
+  if(r.name==='home') startHeroDust();
   // preserve scroll on in-place updates (filters, tabs) but not on navigation
   if(r.name===App._lastRoute && r.sub===App._lastSub && r.slug===App._lastSlug) window.scrollTo(0, scrollY);
   else window.scrollTo(0,0);

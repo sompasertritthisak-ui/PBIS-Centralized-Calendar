@@ -206,6 +206,7 @@ function render(){
   root.innerHTML = renderMasthead() + body + (r.name==='calendar'||r.name==='my' ? '' : renderFooter());
   document.title = routeTitle(r);
   bindReveals();
+  if(r.name==='home') startHeroDust();
   // preserve scroll on in-place updates (filters, tabs) but not on navigation
   if(r.name===App._lastRoute && r.sub===App._lastSub && r.slug===App._lastSlug) window.scrollTo(0, scrollY);
   else window.scrollTo(0,0);
